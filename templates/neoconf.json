@@ -1,0 +1,33 @@
+{
+  "$schema": "https://raw.githubusercontent.com/folke/neoconf.nvim/main/schemas/neoconf.json",
+
+  "lspconfig": {
+    "pyright": {
+      "python": {
+        "pythonPath": ".venv/bin/python"
+      }
+    },
+    "basedpyright": {
+      "python": {
+        "pythonPath": ".venv/bin/python"
+      },
+      "basedpyright": {
+        "typeCheckingMode": "standard"
+      }
+    },
+    "gopls": {
+      "experimentalPostfixCompletions": true,
+      "analyses": {
+        "unusedparams": true
+      }
+    },
+    "eslint": {
+      "workingDirectory": { "mode": "auto" }
+    },
+    "tsserver": {
+      "typescript": {
+        "tsdk": "node_modules/typescript/lib"
+      }
+    }
+  }
+}
