@@ -9,7 +9,12 @@ return {
 		opts = {
 			dashboard = { enabled = false },
 			notifier = {
-				timeout = (vim.env.DEBUG_MESSAGES ~= nil) and 90000 or 60000,
+				timeout = (function()
+				local v = vim.env.DEBUG_MESSAGES
+				if v == nil then return 60000 end
+				local n = tonumber(v)
+				return n and n or 90000
+			end)(),
 			},
 		},
 	},
