@@ -320,6 +320,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `:ReloadFile [files...]` | Reload current buffer (or named open buffers) from disk, keeping cursor position. Tab-completes open buffer names. |
 | `:GenerateUUID` | Insert a new UUIDv4 at cursor position |
 | `:Messages` | Show plugin notification history (snacks notifier) |
+| `:TSInstallInfo` | Show treesitter parser install status in a floating window (`✓`/`✗` per parser). Recreated — removed in the nvim-treesitter v1 rewrite. Close with `q` or `<Esc>`. |
 
 ---
 
