@@ -9,7 +9,6 @@
 --   <leader>su  snacks.picker.undo() – quick fuzzy list of recent undo states
 
 return {
-	-- TODO: check the following plugin instead: https://github.com/jiaoshijie/undotree
 	{
 		"mbbill/undotree",
 		cmd = { "UndotreeToggle", "UndotreeShow", "UndotreeHide" },
