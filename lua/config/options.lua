@@ -169,6 +169,8 @@ opt.wildignore:append({
 	"*.db",
 	"*.sqlite*",
 	"vendor/*",
+	"node_modules/*",
+	".node_modules/*",
 })
 
 -- Diff options
