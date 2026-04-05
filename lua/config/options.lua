@@ -16,9 +16,9 @@ vim.g.lazyvim_python_lsp = "basedpyright" -- fork of pyright; stricter types
 local opt = vim.opt
 
 -- Indentation: 4-space soft tabs (override LazyVim's 2-space defaults)
-opt.tabstop = 4 -- a <Tab> displays as 4 columns
-opt.shiftwidth = 4 -- >> / << / autoindent step
-opt.softtabstop = 4 -- <Tab> in insert mode inserts 4 spaces
+opt.tabstop = 2 -- a <Tab> displays as 4 columns
+opt.shiftwidth = 2 -- >> / << / autoindent step
+opt.softtabstop = 2 -- <Tab> in insert mode inserts 4 spaces
 -- expandtab is already true via LazyVim (spaces, not hard tabs)
 
 -- Cmdline: must be >= 1 since noice.nvim is disabled
