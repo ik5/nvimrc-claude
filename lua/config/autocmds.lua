@@ -208,27 +208,27 @@ autocmd("FileType", {
 -- ─── Terminal splits ──────────────────────────────────────────────────────────
 
 vim.api.nvim_create_user_command("Term", function()
-  vim.cmd("split")
-  vim.cmd("terminal")
-  vim.cmd("startinsert")
+	vim.cmd("split")
+	vim.cmd("terminal")
+	vim.cmd("startinsert")
 end, { desc = "Open terminal in horizontal split" })
 
 vim.api.nvim_create_user_command("VTerm", function()
-  vim.cmd("vsplit")
-  vim.cmd("terminal")
-  vim.cmd("startinsert")
+	vim.cmd("vsplit")
+	vim.cmd("terminal")
+	vim.cmd("startinsert")
 end, { desc = "Open terminal in vertical split" })
 
 -- ─── Format commands ──────────────────────────────────────────────────────────
 
 -- FormatJSON: pretty-print selected/whole-buffer JSON via jq
 vim.api.nvim_create_user_command("FormatJSON", function(args)
-  vim.cmd(args.line1 .. "," .. args.line2 .. "!jq .")
+	vim.cmd(args.line1 .. "," .. args.line2 .. "!jq .")
 end, { range = "%", desc = "Pretty-print JSON (jq)" })
 
 -- FormatXML: pretty-print selected/whole-buffer XML via xmllint
 vim.api.nvim_create_user_command("FormatXML", function(args)
-  vim.cmd(args.line1 .. "," .. args.line2 .. "!xmllint --format --pretty 1 -")
+	vim.cmd(args.line1 .. "," .. args.line2 .. "!xmllint --format --pretty 1 -")
 end, { range = "%", desc = "Pretty-print XML (xmllint)" })
 
 -- ─── ReloadFile ───────────────────────────────────────────────────────────────
@@ -236,31 +236,65 @@ end, { range = "%", desc = "Pretty-print XML (xmllint)" })
 -- :ReloadFile a.go b.go – reload those buffers if open, keep each cursor
 
 vim.api.nvim_create_user_command("ReloadFile", function(args)
-  local function reload_buf(bufnr)
-    local winid = vim.fn.bufwinid(bufnr) -- first window showing this buffer (-1 if hidden)
-    local pos   = winid ~= -1 and vim.api.nvim_win_get_cursor(winid) or nil
-    vim.api.nvim_buf_call(bufnr, function() vim.cmd("edit") end)
-    if pos then pcall(vim.api.nvim_win_set_cursor, winid, pos) end
-  end
+	local function reload_buf(bufnr)
+		local winid = vim.fn.bufwinid(bufnr) -- first window showing this buffer (-1 if hidden)
+		local pos = winid ~= -1 and vim.api.nvim_win_get_cursor(winid) or nil
+		vim.api.nvim_buf_call(bufnr, function()
+			vim.cmd("edit")
+		end)
+		if pos then
+			pcall(vim.api.nvim_win_set_cursor, winid, pos)
+		end
+	end
 
-  if #args.fargs == 0 then
-    reload_buf(vim.api.nvim_get_current_buf())
-  else
-    for _, fname in ipairs(args.fargs) do
-      local bufnr = vim.fn.bufnr(vim.fn.expand(fname))
-      if bufnr == -1 then
-        vim.notify("ReloadFile: no open buffer for " .. fname, vim.log.levels.WARN)
-      else
-        reload_buf(bufnr)
-      end
-    end
-  end
+	if #args.fargs == 0 then
+		reload_buf(vim.api.nvim_get_current_buf())
+	else
+		for _, fname in ipairs(args.fargs) do
+			local bufnr = vim.fn.bufnr(vim.fn.expand(fname))
+			if bufnr == -1 then
+				vim.notify("ReloadFile: no open buffer for " .. fname, vim.log.levels.WARN)
+			else
+				reload_buf(bufnr)
+			end
+		end
+	end
 end, { nargs = "*", complete = "buffer", desc = "Reload buffer(s) from disk, keep cursor position" })
 
 -- ─── GenerateUUID ─────────────────────────────────────────────────────────────
 -- Inserts a new UUIDv4 at the cursor position.
 
 vim.api.nvim_create_user_command("GenerateUUID", function()
-  local uuid = vim.fn.system("uuidgen"):gsub("%s+", ""):lower()
-  vim.api.nvim_put({ uuid }, "c", true, true)
+	local uuid = vim.fn.system("uuidgen"):gsub("%s+", ""):lower()
+	vim.api.nvim_put({ uuid }, "c", true, true)
 end, { desc = "Insert UUIDv4 at cursor (uuidgen)" })
+
+-- Rainbow indent guide highlights.
+-- Each colour is the monokai-pro machine accent blended ~35% toward the
+-- background (#273136) so they stay visible but don't compete with code.
+-- ctermfg values map to the nearest 256-colour terminal equivalent.
+-- Wrapped in ColorScheme so they fire after every :colorscheme reload and
+-- override the theme's own full-brightness SnacksIndent1-5 definitions.
+local function set_indent_hl()
+	local guides = {
+		{ fg = "#73464f", ctermfg = 52 }, -- muted red   (accent1)
+		{ fg = "#735e4a", ctermfg = 58 }, -- muted amber (accent2)
+		{ fg = "#73734b", ctermfg = 100 }, -- muted gold  (accent3)
+		{ fg = "#52704e", ctermfg = 22 }, -- muted sage  (accent4)
+		{ fg = "#456a78", ctermfg = 23 }, -- muted teal  (accent5)
+		{ fg = "#5a587a", ctermfg = 60 }, -- muted plum  (accent6)
+		{ fg = "#68434c", ctermfg = 52 }, -- muted rose  (accent1 darker)
+		{ fg = "#3c5a65", ctermfg = 24 }, -- muted steel (accent5 darker)
+	}
+	for i, hl in ipairs(guides) do
+		vim.api.nvim_set_hl(0, "SnacksIndent" .. i, { fg = hl.fg, ctermfg = hl.ctermfg, nocombine = true })
+	end
+end
+
+vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#606060" })
+
+set_indent_hl()
+autocmd("ColorScheme", {
+	group = augroup("indent_hl", { clear = true }),
+	callback = set_indent_hl,
+})
