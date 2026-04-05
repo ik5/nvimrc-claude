@@ -23,8 +23,6 @@ return {
 
 			opts.icons_enabled = true
 			opts.theme = "auto"
-			opts.component_separators = { left = "", right = "" }
-			opts.section_separators = { left = "", right = "" }
 
 			-- ── Block context (treesitter) ────────────────────────────────────────
 			-- Aerial/LSP in lualine_c shows function/class symbols.
@@ -95,9 +93,6 @@ return {
 						return ""
 					end
 					local cp = vim.fn.char2nr(char)
-					if cp > 127 then
-						return string.format("U+%04X", cp)
-					end
 					return string.format("%d/0x%02X", cp, cp)
 				end,
 				desc = "Character value under cursor",
@@ -118,7 +113,7 @@ return {
 			-- Replaces LazyVim's plain "%R" with "HH:MM  Sun 05/04/2026"
 			opts.sections.lualine_z = {
 				function()
-					return "⌚" .. os.date("%R %a %d/%m/%Y 📅")
+					return "⌚" .. os.date("%R %a %d/%m/%Y📅")
 				end,
 			}
 
