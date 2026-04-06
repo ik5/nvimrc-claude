@@ -16,9 +16,9 @@ vim.g.lazyvim_python_lsp = "basedpyright" -- fork of pyright; stricter types
 local opt = vim.opt
 
 -- Indentation: 4-space soft tabs (override LazyVim's 2-space defaults)
-opt.tabstop = 2 -- a <Tab> displays as 4 columns
+opt.tabstop = 2 -- a <Tab> displays as 2 columns
 opt.shiftwidth = 2 -- >> / << / autoindent step
-opt.softtabstop = 2 -- <Tab> in insert mode inserts 4 spaces
+opt.softtabstop = 2 -- <Tab> in insert mode inserts 2 spaces
 -- expandtab is already true via LazyVim (spaces, not hard tabs)
 
 -- Cmdline: must be >= 1 since noice.nvim is disabled
@@ -53,8 +53,8 @@ opt.signcolumn = "yes:2"
 
 -- Spell: add Hebrew alongside English
 opt.spell = true
-opt.spelllang = { "en_us", "en", "he" }
-opt.spellfile = "~/tmp/spell/en_us.utf8.add,~/tmp/spell/en.utf8.add,~/tmp/spell/he.utf8.add"
+opt.spelllang = { "en_us", "en" }
+opt.spellfile = "~/tmp/spell/en_us.utf8.add,~/tmp/spell/en.utf8.add"
 
 -- Swap and undo directories (keep out of working dir)
 opt.directory = vim.fn.expand("~/tmp/swp//")
