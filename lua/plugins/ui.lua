@@ -10,11 +10,27 @@ return {
 			dashboard = { enabled = false },
 			notifier = {
 				timeout = (function()
-				local v = vim.env.DEBUG_MESSAGES
-				if v == nil then return 60000 end
-				local n = tonumber(v)
-				return n and n or 90000
-			end)(),
+					local v = vim.env.DEBUG_MESSAGES
+					if v == nil then
+						return 60000
+					end
+					local n = tonumber(v)
+					return n and n or 90000
+				end)(),
+			},
+
+			indent = {
+				enabled = true,
+				only_current = false,
+				only_scope = false,
+				char = "│",
+				animated = {
+					enabled = false,
+				},
+				scope = {
+					enabled = true,
+					char = "┊",
+				},
 			},
 		},
 	},
