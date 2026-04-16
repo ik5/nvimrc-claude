@@ -230,7 +230,7 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | Plugin              | Purpose                                                                                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **monokai-pro**     | Colorscheme (pro filter).                                                                                                                               |
-| **lualine**         | Status line (LazyVim base).                                                                                                                             |
+| **lualine**         | Status line (LazyVim base). Extended: `lualine_c` shows treesitter block context (if/for/while); `lualine_x` shows char value · EOL type · filetype; `lualine_z` shows `HH:MM  Day DD/MM/YYYY`. |
 | **snacks.notifier** | Notification popups (noice.nvim disabled). Timeout: 60 s normal, 90 s when `DEBUG_MESSAGES` is set, or the value of `DEBUG_MESSAGES` if it is a number. |
 
 ---
@@ -276,6 +276,10 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | `:FormatXML`                | Format selected/whole-file XML via `xmllint`                                      |
 | `:GenerateUUID`             | Insert a new UUID at the cursor (`uuidgen`)                                       |
 | `:ReloadFile [buf…]`        | Reload current buffer (or named buffers) from disk, keeping cursor position       |
+| `:LspRename [name]`         | Rename symbol under cursor via LSP (optional new name as argument)                |
+| `:LspInfo`                  | Show LSP health / active client status (`:checkhealth vim.lsp`)                   |
+| `:LspLog`                   | Open the LSP log file                                                             |
+| `:LspRestart`               | Restart all LSP clients attached to the current buffer                            |
 
 ---
 
