@@ -298,3 +298,41 @@ autocmd("ColorScheme", {
 	group = augroup("indent_hl", { clear = true }),
 	callback = set_indent_hl,
 })
+
+vim.api.nvim_create_user_command("LspRename", function(opts)
+	-- Optional: pass a new name directly with :LspRename foo
+	local new_name = opts.args ~= "" and opts.args or nil
+	vim.lsp.buf.rename(new_name)
+end, {
+	nargs = "?", -- optional argument
+	desc = "LSP: Rename symbol under cursor",
+	-- You can add range = true if you want it to work on visual selections too
+})
+
+-- Info (if the alias is gone)
+vim.api.nvim_create_user_command("LspInfo", function()
+	vim.cmd("checkhealth vim.lsp")
+end, { desc = "Show LSP health / status" })
+
+-- Log (old :LspLog opened the log file)
+vim.api.nvim_create_user_command("LspLog", function()
+	local log_path = require("vim.lsp.log").get_filename()
+	vim.cmd("edit " .. vim.fn.fnameescape(log_path))
+end, { desc = "Open LSP log" })
+
+vim.api.nvim_create_user_command("LspLogLevel", function(opts)
+	local level = opts.args:lower()
+	require("vim.lsp.log").set_level(level)
+	vim.notify("LSP log level set to: " .. level, vim.log.levels.INFO)
+end, {
+	nargs = 1,
+	complete = function()
+		return { "trace", "debug", "info", "warn", "error", "off" }
+	end,
+	desc = "Set LSP log level (trace/debug/info/warn/error/off)",
+})
+
+-- Example: force-restart all on current buffer
+vim.api.nvim_create_user_command("LspRestart", function()
+	vim.cmd("lsp restart")
+end, { desc = "Restart LSP clients on current buffer" })
