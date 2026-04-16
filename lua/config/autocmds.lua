@@ -304,6 +304,8 @@ autocmd("ColorScheme", {
 	callback = set_custom_hl,
 })
 
+-- (neo-tree layout guard removed — see keymaps.lua <leader>d for the fix)
+
 vim.api.nvim_create_user_command("LspRename", function(opts)
 	-- Optional: pass a new name directly with :LspRename foo
 	local new_name = opts.args ~= "" and opts.args or nil
