@@ -76,6 +76,13 @@ opt.showmode = false -- lualine shows the mode already
 -- List chars: match original config
 opt.listchars = { tab = "  ", trail = "·", extends = "›", precedes = "‹", nbsp = "␣" }
 
+-- Split separators: heavy box-drawing chars so splits are clearly visible.
+-- WinSeparator highlight in autocmds.lua adds colour on top.
+opt.fillchars = {
+  vert      = "┃", vertleft  = "┫", vertright = "┣", verthoriz = "╋",
+  horiz     = "━", horizup   = "┻", horizdown = "┳",
+}
+
 -- Concealment: 1 instead of LazyVim's 2
 opt.conceallevel = 1
 

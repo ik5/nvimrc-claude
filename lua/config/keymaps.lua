@@ -64,12 +64,28 @@ map("n", "+", "<C-W>+")
 map("n", "<M-,>", "<C-W>>")
 map("n", "<M-.>", "<C-W><")
 
--- F2: close current split, but never exit nvim when it's the last window
+-- F2: delete the current buffer (keep window open via Snacks.bufdelete).
+-- Only close the split afterwards when there are other editing windows left —
+-- sidebars (neo-tree, aerial, undotree) are excluded from the count so that
+-- closing the last editing split does not leave neo-tree alone (and exit nvim).
 map("n", "<F2>", function()
-  if #vim.api.nvim_list_wins() > 1 then
+  local sidebar_fts = { ["neo-tree"] = true, aerial = true, undotree = true }
+  local editing_wins = 0
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local ok, buf = pcall(vim.api.nvim_win_get_buf, win)
+    if ok then
+      local cfg = vim.api.nvim_win_get_config(win)
+      local ft  = vim.bo[buf].filetype
+      if cfg.relative == "" and not sidebar_fts[ft] then
+        editing_wins = editing_wins + 1
+      end
+    end
+  end
+  Snacks.bufdelete()
+  if editing_wins > 1 then
     vim.cmd("close")
   end
-end, { silent = true })
+end, { silent = true, desc = "Close buffer (keep layout)" })
 
 -- Equalize splits
 map("n", "<Leader>=", "<C-w>=")
@@ -78,8 +94,11 @@ map("n", "<Leader>=", "<C-w>=")
 -- NOTE: <leader>d conflicts with LazyVim's debug <leader>d* group.
 -- Debug plugins are not loaded in this minimal setup, so no actual conflict yet.
 
-map("n", "<leader>d", ":bd<CR>", { silent = true })
-map("n", "<leader>D", ":b#<bar>bd#<CR>", { silent = true })
+-- Snacks.bufdelete() deletes the buffer but keeps the window alive by
+-- switching to another buffer (or a new empty one if none exist).
+-- This prevents neo-tree from expanding when the last file is closed.
+map("n", "<leader>d", function() Snacks.bufdelete() end, { silent = true, desc = "Delete buffer (keep window)" })
+map("n", "<leader>D", function() Snacks.bufdelete({ wipeout = true }) end, { silent = true, desc = "Wipeout buffer (keep window)" })
 map("n", "<M-d>", ":bn<CR>", { silent = true })
 map("n", "<M-a>", ":bp<CR>", { silent = true })
 map("n", "<leader>bfn", ":bn<CR>", { silent = true })

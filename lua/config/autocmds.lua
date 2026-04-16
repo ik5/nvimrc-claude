@@ -275,7 +275,8 @@ end, { desc = "Insert UUIDv4 at cursor (uuidgen)" })
 -- ctermfg values map to the nearest 256-colour terminal equivalent.
 -- Wrapped in ColorScheme so they fire after every :colorscheme reload and
 -- override the theme's own full-brightness SnacksIndent1-5 definitions.
-local function set_indent_hl()
+local function set_custom_hl()
+	-- Rainbow indent guides: monokai-pro machine accents blended ~35% toward background
 	local guides = {
 		{ fg = "#73464f", ctermfg = 52 }, -- muted red   (accent1)
 		{ fg = "#735e4a", ctermfg = 58 }, -- muted amber (accent2)
@@ -289,15 +290,21 @@ local function set_indent_hl()
 	for i, hl in ipairs(guides) do
 		vim.api.nvim_set_hl(0, "SnacksIndent" .. i, { fg = hl.fg, ctermfg = hl.ctermfg, nocombine = true })
 	end
+
+	-- Window separator: monokai-pro sets this to base.black (~= background),
+	-- making splits invisible. Override with dimmed3 for a clearly visible line.
+	vim.api.nvim_set_hl(0, "WinSeparator", { fg = "#6b7678", ctermfg = 66 })
 end
 
 vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#606060" })
 
-set_indent_hl()
+set_custom_hl()
 autocmd("ColorScheme", {
-	group = augroup("indent_hl", { clear = true }),
-	callback = set_indent_hl,
+	group = augroup("custom_hl", { clear = true }),
+	callback = set_custom_hl,
 })
+
+-- (neo-tree layout guard removed — see keymaps.lua <leader>d for the fix)
 
 vim.api.nvim_create_user_command("LspRename", function(opts)
 	-- Optional: pass a new name directly with :LspRename foo
