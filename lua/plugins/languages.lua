@@ -8,6 +8,10 @@ return {
 	-- remaining ones (bash, html, css, make, asciidoc, etc.)
 	{
 		"nvim-treesitter/nvim-treesitter",
+		dependencies = {
+			"ngalaiko/tree-sitter-go-template",
+		},
+
 		opts = function(_, opts)
 			opts.ensure_installed = opts.ensure_installed or {}
 			vim.list_extend(opts.ensure_installed, {
