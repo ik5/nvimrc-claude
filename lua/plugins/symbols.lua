@@ -13,6 +13,7 @@ return {
 			-- Open on the right side
 			layout = {
 				default_direction = "right",
+				placement = "edge",   -- span full editor height, not just current split
 				resize_to_content = false,
 				width = 45,
 				min_width = 35,
