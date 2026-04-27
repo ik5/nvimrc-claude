@@ -28,11 +28,11 @@ return {
 			"mgalliou/blink-cmp-tmux",
 			"L3MON4D3/LuaSnip",
 		},
+
 		opts = function(_, opts)
 			-- Append extra sources to whatever LazyVim already sets
 			opts.sources = opts.sources or {}
-			opts.sources.default = opts.sources.default or { "lsp", "path", "snippets", "buffer" }
-			vim.list_extend(opts.sources.default, { "omni", "spell", "tmux", "cmdline", "buffer" })
+			opts.sources.default = { "lsp", "snippets", "path", "buffer", "omni", "spell", "tmux" }
 
 			opts.sources.providers = vim.tbl_deep_extend("force", opts.sources.providers or {}, {
 
@@ -60,7 +60,7 @@ return {
 					min_keyword_length = 0,
 					-- If this provider returns 0 items, it will fallback to these providers.
 					-- If multiple providers fallback to the same provider, all of the providers must return 0 items for it to fallback
-					score_offset = 0, -- Boost/penalize the score of the items
+					score_offset = 50,
 					override = nil, -- Override the source's functions
 				},
 
@@ -73,7 +73,7 @@ return {
 					enabled = function()
 						return vim.bo.omnifunc ~= "" and vim.bo.omnifunc ~= "v:lua.vim.lsp.omnifunc"
 					end,
-					score_offset = -2,
+					score_offset = 1,
 				},
 
 				-- ── spell ────────────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ return {
 				spell = {
 					name = "Spell",
 					module = "blink-cmp-spell",
-					score_offset = -5,
+					score_offset = 3,
 					-- Only show spell suggestions when spell is actually on
 					enabled = function()
 						return vim.wo.spell
@@ -95,7 +95,7 @@ return {
 				tmux = {
 					name = "tmux",
 					module = "blink-cmp-tmux",
-					score_offset = -6,
+					score_offset = 5,
 					enabled = function()
 						return vim.env.TMUX ~= nil
 					end,
@@ -108,7 +108,7 @@ return {
 
 				path = {
 					module = "blink.cmp.sources.path",
-					score_offset = 3,
+					score_offset = 4,
 					fallbacks = { "buffer" },
 					opts = {
 						trailing_slash = true,
@@ -126,7 +126,7 @@ return {
 
 				snippets = {
 					module = "blink.cmp.sources.snippets",
-					score_offset = -1, -- receives a -3 from top level snippets.score_offset
+					score_offset = 49, -- receives a -3 from top level snippets.score_offset
 
 					-- For `snippets.preset == 'luasnip'`
 					opts = {
@@ -143,7 +143,7 @@ return {
 
 				buffer = {
 					module = "blink.cmp.sources.buffer",
-					score_offset = -3,
+					score_offset = 48,
 					opts = {
 						-- default to all visible buffers
 						get_bufnrs = function()
