@@ -343,3 +343,9 @@ end, {
 vim.api.nvim_create_user_command("LspRestart", function()
 	vim.cmd("lsp restart")
 end, { desc = "Restart LSP clients on current buffer" })
+
+vim.api.nvim_create_user_command("BlinkClearFrequency", function()
+	local path = vim.fn.stdpath("state") .. "/blink/cmp/frecency.dat"
+	vim.fn.delete(path)
+	vim.notify("blink.cmp: frecency cache cleared", vim.log.levels.INFO)
+end, {})
