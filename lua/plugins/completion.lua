@@ -249,7 +249,7 @@ return {
 				},
 			}
 
-			opts.completions = {
+			opts.completion = {
 				keyword = {
 					-- 'prefix' will fuzzy match on the text before the cursor
 					-- 'full' will fuzzy match on the text before _and_ after the cursor
