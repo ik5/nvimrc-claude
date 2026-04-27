@@ -179,6 +179,13 @@ return {
 					},
 				},
 
+				lazydev = {
+					enabled = false,
+					module = "lazydev.integrations.blink",
+					name = "LazyDev",
+					score_offset = 0,
+				},
+
 				cmdline = {
 					enabled = true,
 					module = "blink.cmp.sources.cmdline",
