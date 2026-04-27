@@ -82,7 +82,7 @@ return {
 				spell = {
 					name = "Spell",
 					module = "blink-cmp-spell",
-					score_offset = 3,
+					score_offset = -3,
 					-- Only show spell suggestions when spell is actually on
 					enabled = function()
 						return vim.wo.spell
@@ -95,7 +95,7 @@ return {
 				tmux = {
 					name = "tmux",
 					module = "blink-cmp-tmux",
-					score_offset = 5,
+					score_offset = -5,
 					enabled = function()
 						return vim.env.TMUX ~= nil
 					end,
@@ -126,7 +126,7 @@ return {
 
 				snippets = {
 					module = "blink.cmp.sources.snippets",
-					score_offset = 49, -- receives a -3 from top level snippets.score_offset
+					score_offset = 10, -- receives a -3 from top level snippets.score_offset
 
 					-- For `snippets.preset == 'luasnip'`
 					opts = {
@@ -143,7 +143,7 @@ return {
 
 				buffer = {
 					module = "blink.cmp.sources.buffer",
-					score_offset = 48,
+					score_offset = 2,
 					opts = {
 						-- default to all visible buffers
 						get_bufnrs = function()
