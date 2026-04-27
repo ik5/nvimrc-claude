@@ -169,6 +169,19 @@ return {
 				},
 			})
 
+			opts.cmdline = {
+				keymap = { preset = "cmdline" },
+				sources = { "buffer", "cmdline" },
+				completion = {
+					ghost_text = { enabled = true },
+					menu = {
+						auto_show = function(ctx, _)
+							return ctx.mode == "cmdwin"
+						end,
+					},
+				},
+			}
+
 			opts.appearance = {
 				nerd_font_variant = "mono",
 				highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
