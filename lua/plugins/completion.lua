@@ -156,16 +156,6 @@ return {
 				cmdline = {
 					enabled = true,
 					module = "blink.cmp.sources.cmdline",
-					keymap = { preset = "cmdline" },
-					sources = { "buffer", "cmdline" },
-					completion = {
-						ghost_text = { enabled = true },
-						menu = {
-							auto_show = function(ctx, _)
-								return ctx.mode == "cmdwin"
-							end,
-						},
-					},
 				},
 			})
 
