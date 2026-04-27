@@ -12,7 +12,7 @@ return {
 				timeout = (function()
 					local v = vim.env.DEBUG_MESSAGES
 					if v == nil then
-						return 60000
+						return 15000
 					end
 					local n = tonumber(v)
 					return n and n or 90000
