@@ -8,7 +8,6 @@ defaults), while this config overrides the parts that diverge from a classic
 
 - Leader is `\` (backslash) instead of `<Space>`
 - No mouse, no relative line numbers
-- 4-space soft tabs instead of 2-space
 - Standard bottom cmdline (noice.nvim disabled)
 - Macro recording on `Q`, not `q`
 - Extra AI, Git, and editor plugins described below
@@ -105,20 +104,23 @@ git config --global status.showUntrackedFiles all
 │   │   └── autocmds.lua       # Autocommands + user commands
 │   └── plugins/
 │       ├── ai.lua             # claudecode.nvim + avante.nvim
+│       ├── bufferline.lua     # bufferline.nvim (tab/buffer line customisation)
 │       ├── colorscheme.lua    # monokai-pro (pro filter)
 │       ├── completion.lua     # blink.cmp extra sources
 │       ├── explorer.lua       # neo-tree + window-picker
 │       ├── formatting.lua     # conform.nvim tweaks
 │       ├── fuzzy.lua          # snacks.picker config + git pickers
 │       ├── git.lua            # neogit + diffview.nvim
-│       ├── go.lua             # Go struct tags + interface stubs
+│       ├── go.lua             # Go struct tags + interface stubs (gomodifytags, impl)
+│       ├── go-nvim.lua        # ray-x/go.nvim (comprehensive Go IDE features)
 │       ├── highlight.lua      # hlargs + rainbow-delimiters + eyeliner
 │       ├── keymaps.lua        # LazyVim keymap overrides
 │       ├── languages.lua      # Extra LSP/treesitter (HTML/CSS/Bash/…)
 │       ├── refactoring.lua    # refactoring.nvim tweaks
+│       ├── statusline.lua     # lualine extensions (block context, char value, clock)
 │       ├── symbols.lua        # aerial.nvim (symbol outline)
 │       ├── textobjects.lua    # nvim-various-textobjs
-│       ├── ui.lua             # Dashboard off, noice off, notifier timeout
+│       ├── ui.lua             # Dashboard off, noice off, notifier timeout + indent
 │       └── undotree.lua       # mbbill/undotree
 ├── key-mapping.md             # Full keymap reference ← see this for all bindings
 └── README.md                  # This file
@@ -155,7 +157,7 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | `ui.treesitter-context` | Sticky scroll — current function signature stays visible |
 | `ai.claudecode`         | Claude Code CLI ↔ Neovim bridge                          |
 | `ai.avante`             | Cursor-like inline AI panel (Anthropic API)              |
-| `lang.go`               | Go LSP, gopls, gotest, gomodifytags, impl                |
+| `lang.go`               | Go LSP (gopls), gotest, gomodifytags, impl               |
 | `lang.python`           | Python LSP (basedpyright), ruff                          |
 | `lang.ruby`             | Ruby LSP, rubocop                                        |
 | `lang.php`              | PHP LSP (phpactor)                                       |
@@ -218,6 +220,13 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | **rainbow-delimiters** | Rainbow-coloured parentheses / brackets / braces up to 7 nesting levels.                                 |
 | **eyeliner.nvim**      | Per-line unique-character hints for `f`/`t` targets.                                                     |
 
+#### Go-specific tools
+
+| Plugin / File          | Purpose                                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **ray-x/go.nvim**      | Comprehensive Go IDE: auto goimports, gofumpt, codelens, golangci-lint, test runner, debug. Loaded on `CmdlineEnter` or Go files. |
+| **go.lua keymaps**     | `<leader>gta/gto/gtr/gtx` — struct tag add/options/remove/clear via gomodifytags. `<leader>gI` — interface stubs via impl. Buffer-local (Go files only). |
+
 #### AI
 
 | Plugin              | Keys        | Purpose                                                                                                     |
@@ -229,33 +238,35 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 
 | Plugin              | Purpose                                                                                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **monokai-pro**     | Colorscheme (pro filter).                                                                                                                               |
-| **lualine**         | Status line (LazyVim base). Extended: `lualine_c` shows treesitter block context (if/for/while); `lualine_x` shows char value · EOL type · filetype; `lualine_z` shows `HH:MM  Day DD/MM/YYYY`. |
-| **snacks.notifier** | Notification popups (noice.nvim disabled). Timeout: 60 s normal, 90 s when `DEBUG_MESSAGES` is set, or the value of `DEBUG_MESSAGES` if it is a number. |
+| **monokai-pro**     | Colorscheme (pro filter). |
+| **bufferline.nvim** | Buffer/tab line with LSP diagnostic indicators, custom icons via mini.icons, and buffer-number labels. |
+| **lualine**         | Status line (LazyVim base). Extended: `lualine_c` shows treesitter block context (if/for/while); `lualine_x` shows char value · EOL type · filetype; `lualine_z` shows `⌚HH:MM Weekday DD/MM/YYYY📅`. |
+| **snacks.notifier** | Notification popups (noice.nvim disabled). Timeout: 15 s (default); if `DEBUG_MESSAGES` is a number → that many ms; if set to any non-numeric value → 90 000 ms. |
 
 ---
 
 ## Notable differences from vanilla LazyVim
 
-| Setting          | LazyVim default | This config                                       |
-| ---------------- | --------------- | ------------------------------------------------- |
-| `mapleader`      | `<Space>`       | `\` (backslash)                                   |
-| `relativenumber` | on              | off by default (toggle with `\rel`)               |
-| `mouse`          | `a` (all)       | disabled                                          |
-| `wrap`           | off             | on (with `linebreak`, `breakindent`)              |
-| `cmdheight`      | 0               | 2 (noice is disabled)                             |
-| `colorcolumn`    | —               | 120                                               |
-| `textwidth`      | —               | 120                                               |
-| `spell`          | off             | on (English + Hebrew)                             |
-| `timeout`        | on              | off (only `ttimeoutlen`)                          |
-| Format key       | `\cf`           | `\lf` (`\cf` kept for cross-instance paste)       |
-| Quit all         | `\qq` / `\qa`   | `\Qq` / `\Qa`                                     |
-| noice.nvim       | enabled         | disabled                                          |
-| dashboard        | enabled         | disabled                                          |
-| lazygit          | `\gg`           | removed (use neogit `\gn` instead)                |
-| `q` key          | macro record    | disabled (use `Q` to record, `M` to execute `@q`) |
-| Swap files       | `~/.swp`        | `~/tmp/swp//`                                     |
-| Undo files       | `~/.vim/undo`   | `~/tmp/vim_undo/`                                 |
+| Setting             | LazyVim default | This config                                       |
+| ------------------- | --------------- | ------------------------------------------------- |
+| `mapleader`         | `<Space>`       | `\` (backslash)                                   |
+| `relativenumber`    | on              | off by default (toggle with `\rel`)               |
+| `mouse`             | `a` (all)       | disabled                                          |
+| `wrap`              | off             | on (with `linebreak`, `breakindent`)              |
+| `cmdheight`         | 0               | 2 (noice is disabled)                             |
+| `colorcolumn`       | —               | 120                                               |
+| `textwidth`         | —               | 120                                               |
+| `spell`             | off             | on (English + Hebrew)                             |
+| `timeout`           | on              | off (only `ttimeoutlen`)                          |
+| Format key          | `\cf`           | `\lf` (`\cf` kept for cross-instance paste)       |
+| Quit all            | `\qq` / `\qa`   | `\Qq` / `\Qa`                                     |
+| noice.nvim          | enabled         | disabled                                          |
+| dashboard           | enabled         | disabled                                          |
+| lazygit             | `\gg`           | removed (use neogit `\gn` instead)                |
+| `q` key             | macro record    | disabled (use `Q` to record, `M` to execute `@q`) |
+| Swap files          | `~/.swp`        | `~/tmp/swp//`                                     |
+| Undo files          | `~/.vim/undo`   | `~/tmp/vim_undo/`                                 |
+| Notifier timeout    | 3 s             | 15 s default; see `DEBUG_MESSAGES` env var        |
 
 ---
 
@@ -279,18 +290,21 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | `:LspRename [name]`         | Rename symbol under cursor via LSP (optional new name as argument)                |
 | `:LspInfo`                  | Show LSP health / active client status (`:checkhealth vim.lsp`)                   |
 | `:LspLog`                   | Open the LSP log file                                                             |
+| `:LspLogLevel <level>`      | Set LSP log verbosity: `trace` / `debug` / `info` / `warn` / `error` / `off`     |
 | `:LspRestart`               | Restart all LSP clients attached to the current buffer                            |
+| `:BlinkClearFrequency`      | Clear blink.cmp frecency cache (`~/state/nvim/blink/cmp/frecency.dat`)            |
 
 ---
 
 ## Environment variables
 
-| Variable              | Effect                                                 |
-| --------------------- | ------------------------------------------------------ |
-| `DEBUG_MESSAGES=1`    | Notification timeout → 90 000 ms                       |
-| `DEBUG_MESSAGES=5000` | Notification timeout → 5 000 ms (any integer)          |
-| `ANTHROPIC_API_KEY`   | Required for avante.nvim (inline AI panel)             |
-| `TMUX`                | Enables blink-cmp-tmux completion source automatically |
+| Variable                     | Effect                                                              |
+| ---------------------------- | ------------------------------------------------------------------- |
+| `DEBUG_MESSAGES=<number>`    | Notification timeout → that many **milliseconds** (e.g. `90000`)   |
+| `DEBUG_MESSAGES=<non-number>` | Notification timeout → 90 000 ms (e.g. `DEBUG_MESSAGES=yes`)       |
+| _(unset)_                    | Notification timeout → 15 000 ms (15 s)                            |
+| `ANTHROPIC_API_KEY`          | Required for avante.nvim (inline AI panel)                         |
+| `TMUX`                       | Enables blink-cmp-tmux completion source automatically              |
 
 ---
 

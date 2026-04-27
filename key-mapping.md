@@ -27,6 +27,7 @@
     - [Diagnostic Commands](#diagnostic-commands)
     - [Terminal Commands](#terminal-commands)
     - [Format Commands](#format-commands)
+    - [LSP Commands](#lsp-commands)
     - [Utility Commands](#utility-commands)
 17. [LSP](#17-lsp)
 18. [Diagnostics (keymaps)](#18-diagnostics-keymaps)
@@ -119,8 +120,8 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 | Key | Mode | Action |
 |-----|------|--------|
-| `<leader>d` | n | Delete current buffer (`:bd`) |
-| `<leader>D` | n | Delete buffer, switch to previous |
+| `<leader>d` | n | Delete buffer, keep window open (`Snacks.bufdelete`) |
+| `<leader>D` | n | Wipeout buffer, keep window open (`Snacks.bufdelete wipeout`) |
 | `<M-d>` | n | Next buffer |
 | `<M-a>` | n | Previous buffer |
 | `<leader>bfn` | n | Next buffer |
@@ -313,6 +314,16 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `:FormatJSON [range]` | Pretty-print JSON via `jq` (defaults to whole file) |
 | `:FormatXML [range]` | Pretty-print XML via `xmllint` (defaults to whole file) |
 
+### LSP Commands
+
+| Command | Description |
+|---------|-------------|
+| `:LspRename [name]` | Rename symbol under cursor via LSP; optional new name as argument |
+| `:LspInfo` | Show LSP health / active client status (`:checkhealth vim.lsp`) |
+| `:LspLog` | Open the LSP log file in a buffer |
+| `:LspLogLevel <level>` | Set LSP log verbosity: `trace` / `debug` / `info` / `warn` / `error` / `off` |
+| `:LspRestart` | Restart all LSP clients on the current buffer |
+
 ### Utility Commands
 
 | Command | Description |
@@ -321,6 +332,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `:GenerateUUID` | Insert a new UUIDv4 at cursor position |
 | `:Messages` | Show plugin notification history (snacks notifier) |
 | `:TSInstallInfo` | Show treesitter parser install status in a floating window (`✓`/`✗` per parser). Recreated — removed in the nvim-treesitter v1 rewrite. Close with `q` or `<Esc>`. |
+| `:BlinkClearFrequency` | Clear blink.cmp frecency/recency cache |
 
 ---
 
