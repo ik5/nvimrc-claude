@@ -22,15 +22,19 @@ return {
 				pattern = "*.go",
 				callback = function(args)
 					local client = vim.lsp.get_client_by_id(args.data.client_id)
-					if client and client:supports_method("textDocument/codeLens") then
-						-- Initial refresh
-						vim.lsp.codelens.refresh()
-						-- Keep refreshing on these events
+					if not client or not client:supports_method("textDocument/codeLens") then
+						return
+					end
+					local codelens = vim.lsp.codelens
+					if type(codelens.enable) == "function" then
+						-- nvim nightly / 0.12+
+						codelens.enable(true, { bufnr = args.buf })
+					elseif type(codelens.refresh) == "function" then
+						-- nvim 0.11 stable
+						codelens.refresh()
 						vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave", "BufWritePre" }, {
 							buffer = args.buf,
-							callback = function()
-								vim.lsp.codelens.refresh()
-							end,
+							callback = codelens.refresh,
 						})
 					end
 				end,
