@@ -10,7 +10,7 @@
 -- This file:
 --   1. Appends to lualine_c:  block_context — innermost if/for/while block
 --      (treesitter-level; aerial/LSP only shows function/class symbols)
---   2. Appends to lualine_x:  char value · EOL type · filetype text
+--   2. Appends to lualine_x:  flutter device/version · char value · EOL · filetype
 --   3. Replaces lualine_z:    time + day-of-week + date
 
 return {
@@ -81,6 +81,33 @@ return {
 			}
 
 			table.insert(opts.sections.lualine_c, block_context)
+
+			-- ── Flutter run info (flutter-tools decorations) ──────────────────────
+			local flutter_info = {
+				function()
+					local d = vim.g.flutter_tools_decorations
+					if not d then
+						return ""
+					end
+					local parts = {}
+					if d.device and d.device ~= "" then
+						table.insert(parts, d.device)
+					end
+					if d.app_version and d.app_version ~= "" then
+						table.insert(parts, d.app_version)
+					end
+					if d.project_config and d.project_config ~= "" then
+						table.insert(parts, d.project_config)
+					end
+					return table.concat(parts, " · ")
+				end,
+				cond = function()
+					return vim.bo.filetype == "dart"
+				end,
+				color = { fg = "#8b9798" },
+			}
+
+			table.insert(opts.sections.lualine_x, flutter_info)
 
 			-- ── Character value under cursor ─────────────────────────────────────
 			-- ASCII range: "65/0x41"   Unicode: "U+03B1"

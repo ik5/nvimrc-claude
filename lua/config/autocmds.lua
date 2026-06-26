@@ -3,6 +3,19 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
+-- ─── Flutter SDK (before dart LSP attach) ───────────────────────────────────
+-- flutter-tools lazy-loads on ft=dart, so resolve the SDK in BufReadPre — that
+-- runs before filetype detection and the ftplugin LSP attach.
+
+autocmd("BufReadPre", {
+	group = augroup("flutter_sdk_prime", { clear = true }),
+	pattern = { "*.dart", "pubspec.yaml" },
+	callback = function()
+		require("lazy").load({ plugins = { "flutter-tools.nvim" } })
+		require("config.flutter_sdk").apply(vim.fn.getcwd())
+	end,
+})
+
 -- ─── File position restore ────────────────────────────────────────────────────
 -- Re-open files at the last cursor position
 
