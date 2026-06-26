@@ -8,6 +8,10 @@
 --   <C-v>  vertical split of a picked window (window-picker)
 --   w      open in a picked window (window-picker)
 
+local grep_finder = function(opts, ctx)
+	return require("config.grep_finder").grep(opts, ctx)
+end
+
 local picker_open_keys = {
 	input = {
 		["<CR>"] = { "confirm", mode = { "n", "i" } },
@@ -29,6 +33,12 @@ return {
 	{
 		"folke/snacks.nvim",
 		dependencies = { "s1n7ax/nvim-window-picker" }, -- config: lua/plugins/window-picker.lua
+		init = function()
+			package.preload["snacks.picker.source.grep"] = function()
+				return require("config.grep_finder")
+			end
+			package.loaded["snacks.picker.source.grep"] = nil
+		end,
 		opts = {
 			picker = {
 				actions = {
@@ -47,9 +57,13 @@ return {
 					list = { keys = picker_open_keys.list },
 				},
 				sources = {
-					grep = { jump = { reuse_win = true } },
-					grep_word = { jump = { reuse_win = true } },
-					grep_buffers = { jump = { reuse_win = true } },
+					grep = {
+						finder = grep_finder,
+						jump = { reuse_win = true },
+						title = "Grep  (pattern -- -i -v -t type)",
+					},
+					grep_word = { finder = grep_finder, jump = { reuse_win = true } },
+					grep_buffers = { finder = grep_finder, jump = { reuse_win = true } },
 				},
 			},
 		},
