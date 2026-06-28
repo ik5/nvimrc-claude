@@ -263,20 +263,46 @@ map("i", "<F8>", "<Esc>:set invrevins!<CR>a")
 -- ─── Grep (ripgrep via snacks.picker) ─────────────────────────────────────────
 -- In the picker: <CR> last window · <C-x>/<C-v>/w use window-picker (neo-tree style)
 -- ga still uses classic :grepadd → quickfix (same open keys on the qf list)
+--
+-- Word greps scope to the current buffer language when rg recognizes it (go, ruby, …).
+--   vim.g.grep_scope_filetype = false   search all files
+--   vim.g.grep_ft_map = { myft = "rgtype" }   extra vim → rg aliases
+--
+-- Case insensitive: gW / g#     Invert (negative): g!w / g!*
+-- Prompt (g/):  pattern -- -i -v -t go
+
+local grep = require("config.grep")
 
 map("n", "gw", function()
-	Snacks.picker.grep({ search = "\\b" .. vim.fn.expand("<cword>") .. "\\b" })
+	grep.word(true)
 end, { desc = "Grep word (whole)", silent = true })
 
+map("n", "gW", function()
+	grep.word(true, { insensitive = true })
+end, { desc = "Grep word (whole, case insensitive)", silent = true })
+
+map("n", "g!w", function()
+	grep.word(true, { invert = true })
+end, { desc = "Grep word (whole, invert)", silent = true })
+
 map("n", "g/", function()
-	Snacks.picker.grep()
+	grep.picker()
 end, { desc = "Grep prompt", silent = true })
 
 map("n", "g*", function()
-	Snacks.picker.grep({ search = vim.fn.expand("<cword>") })
+	grep.word(false)
 end, { desc = "Grep word (partial)", silent = true })
 
-map("n", "ga", [[:silent grepadd! ]])
+map("n", "g#", function()
+	grep.word(false, { insensitive = true })
+end, { desc = "Grep word (partial, case insensitive)", silent = true })
+
+map("n", "g!*", function()
+	grep.word(false, { invert = true })
+end, { desc = "Grep word (partial, invert)", silent = true })
+
+-- grepprg passes $* through to rg:  :grepadd! -i -v -t go pattern
+map("n", "ga", [[:silent grepadd! ]], { desc = "Grep add (quickfix; rg flags before pattern)" })
 
 -- ─── LSP shortcuts ────────────────────────────────────────────────────────────
 -- Open definition in a horizontal / vertical split.
