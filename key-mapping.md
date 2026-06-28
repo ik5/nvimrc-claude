@@ -44,14 +44,15 @@
 29. [Refactoring](#29-refactoring)
 30. [Text Objects](#30-text-objects)
 31. [Go Language Tools](#31-go-language-tools)
-32. [AI — Claude Code](#32-ai--claude-code)
-33. [AI — Avante](#33-ai--avante)
-34. [UI Toggles (snacks)](#34-ui-toggles-snacks)
-35. [Windows & Tabs (LazyVim)](#35-windows--tabs-lazyvim)
-36. [Trouble (diagnostics list)](#36-trouble-diagnostics-list)
-37. [Todo Comments](#37-todo-comments)
-38. [Formatting](#38-formatting)
-39. [Keymap Conflicts Resolved](#39-keymap-conflicts-resolved)
+32. [Flutter / Dart](#32-flutter--dart)
+33. [AI — Claude Code](#33-ai--claude-code)
+34. [AI — Avante](#34-ai--avante)
+35. [UI Toggles (snacks)](#35-ui-toggles-snacks)
+36. [Windows & Tabs (LazyVim)](#36-windows--tabs-lazyvim)
+37. [Trouble (diagnostics list)](#37-trouble-diagnostics-list)
+38. [Todo Comments](#38-todo-comments)
+39. [Formatting](#39-formatting)
+40. [Keymap Conflicts Resolved](#40-keymap-conflicts-resolved)
 
 ---
 
@@ -250,12 +251,20 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ## 13. Grep (ripgrep)
 
+> Word greps auto-scope to the current buffer's filetype when ripgrep recognises it (e.g. searching a Go file only greps `.go` files).  
+> Disable with `vim.g.grep_scope_filetype = false`. Add extra filetype mappings via `vim.g.grep_ft_map`.  
+> The free-input prompt (`g/`) accepts rg flags after `--`: e.g. `myPattern -- -i -v -t go`
+
 | Key | Mode | Action |
 |-----|------|--------|
-| `gw` | n | Grep word under cursor (whole word) |
-| `g/` | n | Grep prompt (free input) |
-| `g*` | n | Grep word under cursor (partial match) |
-| `ga` | n | Grep add (append results to quickfix) |
+| `gw` | n | Grep word under cursor (whole word, case-sensitive) |
+| `gW` | n | Grep word under cursor (whole word, case-insensitive) |
+| `g!w` | n | Grep word under cursor (whole word, invert match) |
+| `g/` | n | Grep prompt — free input; append `-- -flags` for rg options |
+| `g*` | n | Grep word under cursor (partial match, case-sensitive) |
+| `g#` | n | Grep word under cursor (partial match, case-insensitive) |
+| `g!*` | n | Grep word under cursor (partial match, invert match) |
+| `ga` | n | Grep add — append results to quickfix (classic `:grepadd!`) |
 | `,f` | n | `:find ` prompt |
 | `,s` | n | `:sfind ` (split find) |
 | `,v` | n | `:vert sfind ` (vsplit find) |
@@ -467,6 +476,13 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `<leader>gH` | n | File history with diffs (whole repo) |
 | `<leader>gX` | n | Close diffview |
 
+**VCS utilities (keymaps.lua):**
+
+| Key | Mode | Action |
+|-----|------|--------|
+| `<leader>vcsfc` | n | Find merge conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) |
+| `<leader><C-w>` | n | Exit diff mode (`:windo diffoff`) |
+
 ---
 
 ## 23. File Explorer (neo-tree)
@@ -568,7 +584,8 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 | Key | Mode | Action |
 |-----|------|--------|
-| `<F6>` | n | Toggle undo tree panel |
+| `<F6>` | n | Toggle undo tree panel (full branch tree + diff) |
+| `<leader>su` | n | Undo history picker (snacks.picker — quick fuzzy list of undo states) |
 
 **Inside undotree panel:** use `j`/`k` to navigate, `<CR>` to restore, `d` to diff.
 
@@ -576,7 +593,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ## 29. Refactoring
 
-> `<leader>r*` keys available in normal and visual mode.
+> **Note:** requires adding `{ import = "lazyvim.plugins.extras.editor.refactoring" }` to `lua/config/lazy.lua`. The extra is not currently enabled.
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -631,7 +648,39 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 32. AI — Claude Code
+## 32. Flutter / Dart
+
+> Buffer-local. Available only in Dart (`.dart`) files and `pubspec.yaml`.
+> Requires opening a `.dart` file first — flutter-tools.nvim loads lazily on `ft=dart`.
+
+| Key | Mode | Action |
+|-----|------|--------|
+| `<leader>Fr` | n | Flutter: Run app |
+| `<leader>FR` | n | Flutter: Hot reload |
+| `<leader>Fs` | n | Flutter: Hot restart |
+| `<leader>Fq` | n | Flutter: Quit running session |
+| `<leader>Fd` | n | Flutter: Pick device / emulator |
+| `<leader>Fo` | n | Flutter: Toggle widget outline |
+| `<leader>Fp` | n | Flutter: Pub get |
+| `<leader>FS` | n | Flutter: Go to super (dartls LSP) |
+
+**Flutter commands** (available after entering a Dart buffer):
+
+| Command | Description |
+|---------|-------------|
+| `:FlutterRun` | Start the Flutter app |
+| `:FlutterReload` | Hot reload the running app |
+| `:FlutterRestart` | Hot restart the running app |
+| `:FlutterQuit` | Stop the running Flutter session |
+| `:FlutterDevices` | Pick a device / emulator to run on |
+| `:FlutterOutlineToggle` | Toggle the widget outline panel |
+| `:FlutterPubGet` | Run `flutter pub get` |
+| `:FlutterSuper` | Navigate to the super class (dartls) |
+| `:FlutterSdkInfo` | Show the resolved Flutter SDK path and detection source |
+
+---
+
+## 33. AI — Claude Code
 
 > Connects Neovim to the Claude Code CLI via WebSocket (MCP protocol).
 > Requires the Claude Code CLI to be running.
@@ -651,7 +700,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 33. AI — Avante
+## 34. AI — Avante
 
 > Inline AI assistant (Cursor-style). Uses Anthropic API directly.
 > Model: `claude-sonnet-4-6`.
@@ -673,7 +722,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 34. UI Toggles (snacks)
+## 35. UI Toggles (snacks)
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -701,7 +750,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 35. Windows & Tabs (LazyVim)
+## 36. Windows & Tabs (LazyVim)
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -716,7 +765,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 36. Trouble (diagnostics list)
+## 37. Trouble (diagnostics list)
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -730,7 +779,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 37. Todo Comments
+## 38. Todo Comments
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -743,7 +792,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 38. Formatting
+## 39. Formatting
 
 | Key / Command | Mode | Action |
 |---------------|------|--------|
@@ -763,7 +812,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 39. Keymap Conflicts Resolved
+## 40. Keymap Conflicts Resolved
 
 | Original Key | Was | Now | Reason |
 |---|---|---|---|
