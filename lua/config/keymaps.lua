@@ -260,16 +260,27 @@ map("i", "<F9>", "<Esc>:set invrl!<CR>a")
 map("n", "<F8>", ":set invrevins!<CR>")
 map("i", "<F8>", "<Esc>:set invrevins!<CR>a")
 
--- ─── Grep (ripgrep) ───────────────────────────────────────────────────────────
+-- ─── Grep (ripgrep via snacks.picker) ─────────────────────────────────────────
+-- In the picker: <CR> last window · <C-x>/<C-v>/w use window-picker (neo-tree style)
+-- ga still uses classic :grepadd → quickfix (same open keys on the qf list)
 
-map("n", "gw", [[:silent grep! "\b<C-R><C-W>\b"<CR>:cw<CR>]])
-map("n", "g/", [[:silent grep! ]])
-map("n", "g*", [[:silent grep! -w <C-R><C-W> ]])
+map("n", "gw", function()
+	Snacks.picker.grep({ search = "\\b" .. vim.fn.expand("<cword>") .. "\\b" })
+end, { desc = "Grep word (whole)", silent = true })
+
+map("n", "g/", function()
+	Snacks.picker.grep()
+end, { desc = "Grep prompt", silent = true })
+
+map("n", "g*", function()
+	Snacks.picker.grep({ search = vim.fn.expand("<cword>") })
+end, { desc = "Grep word (partial)", silent = true })
+
 map("n", "ga", [[:silent grepadd! ]])
 
 -- ─── LSP shortcuts ────────────────────────────────────────────────────────────
 -- Open definition in a horizontal / vertical split.
--- (Plain `gd` uses snacks picker; inside the picker <C-s>=hsplit <C-v>=vsplit)
+-- (Plain `gd` uses snacks picker; <CR> last win · <C-x> hsplit · <C-v> vsplit)
 
 map("n", "<leader>gd", function()
   vim.cmd("split")

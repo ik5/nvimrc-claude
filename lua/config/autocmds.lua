@@ -80,6 +80,15 @@ autocmd("QuickFixCmdPost", {
 	end,
 })
 
+-- Quickfix list keys: <CR> / <C-x> / <C-v> (same as snacks.picker)
+autocmd("FileType", {
+	group = augroup("quickfix_keys", { clear = true }),
+	pattern = "qf",
+	callback = function(ev)
+		require("config.quickfix").setup_buffer(ev.buf)
+	end,
+})
+
 -- ─── Remap LazyVim quit group: \q* → \Q* ─────────────────────────────────────
 -- Our \q = :only (close other windows). LazyVim's core keymaps include \qq
 -- (quit all) and \qa (quit all no save). We move those to \Qq / \Qa.

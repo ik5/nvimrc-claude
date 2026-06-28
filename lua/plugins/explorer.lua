@@ -1,28 +1,7 @@
 -- File explorer: neo-tree.nvim
--- Imports the LazyVim extra, adds nvim-window-picker, and applies custom config.
+-- Window picker config: lua/plugins/window-picker.lua
 
 return {
-	-- ── Window picker: lets you choose which split to open a file in ─────────
-	{
-		"s1n7ax/nvim-window-picker",
-		name = "window-picker",
-		event = "VeryLazy",
-		version = "2.*",
-		opts = {
-			hint = "floating-big-letter",
-			filter_rules = {
-				include_current_win = false,
-				autoselect_one = true,
-				bo = {
-					-- never pick these as targets
-					filetype = { "neo-tree", "neo-tree-popup", "notify", "snacks_notif" },
-					buftype = { "terminal", "quickfix" },
-				},
-			},
-		},
-	},
-
-	-- ── neo-tree configuration ────────────────────────────────────────────────
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		dependencies = { "s1n7ax/nvim-window-picker", "MunifTanjim/nui.nvim" },
