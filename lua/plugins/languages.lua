@@ -29,6 +29,27 @@ return {
 		end,
 	},
 
+	-- Schema store (helps jsonls + yamlls)
+	{
+		"b0o/SchemaStore.nvim",
+		version = false, -- use latest
+	},
+
+	-- ── LSP document links ($ref navigation for YAML/JSON) ───────────────────
+	-- yamlls/jsonls expose $ref targets via textDocument/documentLink, which
+	-- Neovim doesn't handle natively yet. lsplinks bridges that gap.
+	{
+		"icholy/lsplinks.nvim",
+		event = "LspAttach",
+		config = function()
+			local lsplinks = require("lsplinks")
+			lsplinks.setup()
+			-- Override gx (default) or pick something that doesn't conflict.
+			-- If you use gx for URL opening, consider "gL" or "g<CR>" instead.
+			vim.keymap.set("n", "gL", lsplinks.gx)
+		end,
+	},
+
 	-- ── LSP: HTML, CSS, Bash (not in any LazyVim extra) ─────────────────────
 	{
 		"neovim/nvim-lspconfig",
@@ -58,6 +79,26 @@ return {
 					settings = {
 						bashIde = {
 							globPattern = "*@(.sh|.inc|.bash|.command)",
+						},
+					},
+				},
+				yamlls = {
+					settings = {
+						yaml = {
+							validate = true,
+							schemaStore = {
+								enable = true, -- Let it auto-fetch when needed
+								url = "https://www.schemastore.org/api/json/catalog.json",
+							},
+						},
+					},
+				},
+
+				jsonls = {
+					settings = {
+						json = {
+							schemas = require("schemastore").json.schemas(),
+							validate = { enable = true },
 						},
 					},
 				},
