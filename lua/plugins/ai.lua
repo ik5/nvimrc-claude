@@ -115,15 +115,23 @@ return {
 			},
 		},
 		config = function()
+			local opencode_cmd = "opencode --port"
+			local snacks_terminal_opts = { win = { position = "right", enter = false } }
+
 			vim.g.opencode_opts = {
 				server = {
 					start = function()
-						require("snacks.terminal").open("opencode --port", {
-							win = { position = "right", enter = false },
-						})
+						require("snacks.terminal").open(opencode_cmd, snacks_terminal_opts)
+					end,
+					stop = function()
+						require("snacks.terminal").get(opencode_cmd, snacks_terminal_opts):close()
+					end,
+					toggle = function()
+						require("snacks.terminal").toggle(opencode_cmd, snacks_terminal_opts)
 					end,
 				},
 			}
+			vim.o.autoread = true -- required for opts.events.reload
 		end,
 	},
 }
