@@ -92,7 +92,9 @@ return {
 			{
 				"<leader>oo",
 				function()
-					require("opencode").toggle()
+					require("snacks.terminal").toggle("opencode --port", {
+						win = { position = "right", enter = false },
+					})
 				end,
 				desc = "Toggle opencode",
 			},
