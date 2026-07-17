@@ -47,24 +47,26 @@
 32. [Flutter / Dart](#32-flutter--dart)
 33. [AI — Claude Code](#33-ai--claude-code)
 34. [AI — Avante](#34-ai--avante)
-35. [UI Toggles (snacks)](#35-ui-toggles-snacks)
-36. [Windows & Tabs (LazyVim)](#36-windows--tabs-lazyvim)
-37. [Trouble (diagnostics list)](#37-trouble-diagnostics-list)
-38. [Todo Comments](#38-todo-comments)
-39. [Formatting](#39-formatting)
-40. [Keymap Conflicts Resolved](#40-keymap-conflicts-resolved)
+35. [AI — OpenCode](#35-ai--opencode)
+36. [UI Toggles (snacks)](#36-ui-toggles-snacks)
+37. [Windows & Tabs (LazyVim)](#37-windows--tabs-lazyvim)
+38. [Trouble (diagnostics list)](#38-trouble-diagnostics-list)
+39. [Todo Comments](#39-todo-comments)
+40. [Formatting](#40-formatting)
+41. [Keymap Conflicts Resolved](#41-keymap-conflicts-resolved)
 
 ---
 
 ## 1. Conventions & Picker Keys
 
-These keys apply inside any **snacks.picker** or **neo-tree** window:
+These keys apply inside any **snacks.picker**, **neo-tree**, or **quickfix** window:
 
 | Key | Mode | Action |
 |-----|------|--------|
-| `<C-x>` | n/i | Open selection in horizontal split |
-| `<C-v>` | n/i | Open selection in vertical split |
-| `w` | n | Pick destination window, then open |
+| `<CR>` | n/i | Open selection in last / current window |
+| `<C-x>` | n/i | Open selection in horizontal split (window-picker for destination) |
+| `<C-v>` | n/i | Open selection in vertical split (window-picker for destination) |
+| `w` | n | Pick destination window, then open (picker / neo-tree / aerial) |
 
 ---
 
@@ -108,12 +110,20 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `+` | n | Increase window height (`<C-W>+`) |
 | `<M-,>` | n | Decrease window width (`<C-W>>`) |
 | `<M-.>` | n | Increase window width (`<C-W><`) |
-| `<F2>` | n | Close current split (never exits if last window) |
+| `<F2>` | n | **Smart close** (see below) |
 | `<Leader>=` | n | Equalize all split sizes |
 | `<leader>-` | n | Split window below (LazyVim) |
 | `<leader>\|` | n | Split window right (LazyVim) |
 | `<leader>wd` | n | Delete window (LazyVim) |
 | `<leader>wm` | n | Toggle window zoom (LazyVim) |
+
+### `<F2>` smart close
+
+Closes without abandoning the last real editing window (sidebars alone never force-exit Neovim):
+
+1. **Special / non-editable window** (help, quickfix, terminal, neo-tree, aerial, undotree, any non-empty `buftype`) → `:close` the window only.
+2. **Same buffer already shown in another window** → `:close` this split only (buffer stays loaded).
+3. **Otherwise** → `Snacks.bufdelete()` (switch to another listed buffer or a new empty one). If other editing windows remain, also `:close` this split so the same file is not left duplicated in both panes.
 
 ---
 
@@ -188,7 +198,8 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `gx` | n | Swap current char with next |
 | `gX` | n | Swap current char with previous |
 | `gl` | n | Swap current word with previous |
-| `gr` | n | Swap current word with next |
+| `gr` | n | Swap current word with next (overrides LazyVim LSP references on this key) |
+| `gL` | n | Follow LSP document link (`$ref` / YAML·JSON pointer via lsplinks.nvim) |
 | `g{` | n | Swap paragraph with previous |
 | `g}` | n | Swap paragraph with next |
 
@@ -215,9 +226,9 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 |-----|------|--------|
 | `<leader>p` | n | Paste and re-indent |
 | `<leader>P` | n | Paste before and re-indent |
-| `<leader>y` | v | Copy selection to `~/.tmp/.vbuf` |
-| `<leader>y` | n | Copy current line to `~/.tmp/.vbuf` |
-| `<leader>cf` | n | Paste from `~/.tmp/.vbuf` |
+| `<leader>y` | v | Copy selection to `~/tmp/.vbuf` |
+| `<leader>y` | n | Copy current line to `~/tmp/.vbuf` |
+| `<leader>cf` | n | Paste from `~/tmp/.vbuf` |
 | `Y` | n | Yank to end of line |
 | `gp` | n | Visually reselect last yank |
 
@@ -339,9 +350,21 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 |---------|-------------|
 | `:ReloadFile [files...]` | Reload current buffer (or named open buffers) from disk, keeping cursor position. Tab-completes open buffer names. |
 | `:GenerateUUID` | Insert a new UUIDv4 at cursor position |
-| `:Messages` | Show plugin notification history (snacks notifier) |
-| `:TSInstallInfo` | Show treesitter parser install status in a floating window (`✓`/`✗` per parser). Recreated — removed in the nvim-treesitter v1 rewrite. Close with `q` or `<Esc>`. |
+| `:Messages` | Show snacks.nvim notification history (`vim.notify` from plugins; not built-in `:messages`) |
+| `:TSInstallInfo` | Interactive treesitter grammar list (see below). Recreated — removed in the nvim-treesitter v1 rewrite. |
 | `:BlinkClearFrequency` | Clear blink.cmp frecency/recency cache |
+
+### `:TSInstallInfo` keys (inside the floating window)
+
+| Key | Action |
+|-----|--------|
+| `a` | Show all grammars |
+| `f` | Filter to installed only |
+| `m` | Filter to missing only |
+| `i` / `<CR>` | Install grammar under cursor |
+| `x` | Uninstall grammar under cursor |
+| `u` | Update grammar under cursor |
+| `q` / `<Esc>` | Close window |
 
 ---
 
@@ -352,8 +375,9 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | Key | Mode | Action |
 |-----|------|--------|
 | `gd` | n | Go to definition (snacks picker) |
-| `gr` | n | Go to references (snacks picker) |
+| `gr` | n | *(overridden — see Movement: swap word with next)* |
 | `gI` | n | Go to implementation (snacks picker) |
+| `gL` | n | Follow LSP document link (`$ref` in YAML/JSON via lsplinks) |
 | `gy` | n | Go to type definition (snacks picker) |
 | `gD` | n | Go to declaration |
 | `K` | n | Hover documentation |
@@ -676,7 +700,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `:FlutterOutlineToggle` | Toggle the widget outline panel |
 | `:FlutterPubGet` | Run `flutter pub get` |
 | `:FlutterSuper` | Navigate to the super class (dartls) |
-| `:FlutterSdkInfo` | Show the resolved Flutter SDK path and detection source |
+| `:FlutterSdkInfo` | Show the resolved Flutter SDK path and detection source (project FVM → FVM cache → `$FLUTTER_ROOT` → `PATH` → common dirs) |
 
 ---
 
@@ -722,7 +746,21 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 35. UI Toggles (snacks)
+## 35. AI — OpenCode
+
+> Integrates the [OpenCode](https://github.com/nickjvandyke/opencode.nvim) CLI.
+> Plugin loads **only** when `opencode` is executable on `$PATH`.
+> Server UI is a snacks.terminal panel on the **right** (`enter = false`).
+
+| Key | Mode | Action |
+|-----|------|--------|
+| `<leader>oo` | n | Toggle OpenCode terminal panel |
+| `<leader>oa` | n | Ask OpenCode |
+| `<leader>os` | n, v | Select OpenCode action (normal / visual) |
+
+---
+
+## 36. UI Toggles (snacks)
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -750,7 +788,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 36. Windows & Tabs (LazyVim)
+## 37. Windows & Tabs (LazyVim)
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -765,7 +803,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 37. Trouble (diagnostics list)
+## 38. Trouble (diagnostics list)
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -779,7 +817,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 38. Todo Comments
+## 39. Todo Comments
 
 | Key | Mode | Action |
 |-----|------|--------|
@@ -792,7 +830,7 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 
 ---
 
-## 39. Formatting
+## 40. Formatting
 
 | Key / Command | Mode | Action |
 |---------------|------|--------|
@@ -800,23 +838,27 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `:FormatJSON` | — | Pretty-print JSON via `jq` (accepts range) |
 | `:FormatXML` | — | Pretty-print XML via `xmllint` (accepts range) |
 
-**Auto-format on save** is configured per filetype via conform.nvim:
+**Auto-format on save** is configured per filetype via conform.nvim / go.nvim:
 
 | Filetype | Formatter |
 |----------|-----------|
 | Python | `ruff_format`, `ruff_organize_imports` |
-| JavaScript / TypeScript / HTML / CSS / SCSS / YAML / JSON | `prettier` |
+| JavaScript / TypeScript / HTML / CSS / SCSS / Less / YAML / JSON / GraphQL | `prettier` (default tab width 4 if no project config) |
 | C / C++ | `clang_format` |
-| Shell | `shfmt` (4-space indent) |
-| Go | `gofmt` + `goimports` (via LazyVim Go extra) |
+| Shell | `shfmt` (4-space indent, `-ci`) |
+| Go | `gofumpt` + `goimports` (go.nvim `BufWritePre`; LazyVim Go extra also present) |
+| Dart | `dart_format` |
+| Lua | `stylua` (LazyVim base) |
+
+Trailing whitespace is highlighted and stripped on save (except binary/diff buffers).
 
 ---
 
-## 40. Keymap Conflicts Resolved
+## 41. Keymap Conflicts Resolved
 
 | Original Key | Was | Now | Reason |
 |---|---|---|---|
-| `<leader>cf` | LazyVim format | Paste from `~/.tmp/.vbuf` | Kept original vimrc paste binding |
+| `<leader>cf` | LazyVim format | Paste from `~/tmp/.vbuf` | Kept original vimrc paste binding |
 | `<leader>lf` | _(unbound)_ | Format document/range | Moved format here |
 | `<leader>gd` | snacks git diff | LSP definition (hsplit) | LSP split more useful |
 | `<leader>gD` | snacks git diff (origin) | LSP definition (vsplit) | LSP split more useful |
@@ -829,3 +871,5 @@ These keys apply inside any **snacks.picker** or **neo-tree** window:
 | `<leader>qa` | LazyVim quit force | `<leader>Qa` | Same reason |
 | `<leader>Aa` | avante ask | _(moved from `\aa`)_ | `\a` prefix reserved for Claude Code |
 | All `<leader>a*` avante keys | `\a*` | `\A*` | Avoid clash with claudecode `\a` prefix |
+| `gr` | LazyVim LSP references | Swap word with next | Personal swap binding kept; use snacks picker symbols / Trouble for references if needed |
+| `<F2>` | Simple `:close` | Smart buffer/window close | Safer multi-window + sidebar behaviour |

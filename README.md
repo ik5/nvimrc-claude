@@ -24,10 +24,11 @@ defaults), while this config overrides the parts that diverge from a classic
 | **`ripgrep`** (`rg`)                 | Fuzzy grep via snacks.picker                          |
 | **`fd`**                             | File finding via snacks.picker                        |
 | **Node.js**                          | Many LSP servers install via npm                      |
-| **`uuidgen`**                        | `:GenerateUUID` command                               |
 | **`uuidgen`, `jq`, `xmllint`**       | `:GenerateUUID`, `:FormatJSON`, `:FormatXML` commands |
 | **tmux** _(optional)_                | blink-cmp-tmux completion source                      |
 | **`ANTHROPIC_API_KEY`** _(optional)_ | Required only for avante.nvim inline AI               |
+| **`opencode`** _(optional)_          | OpenCode CLI; enables opencode.nvim when on `$PATH`   |
+| **Flutter SDK** _(optional)_         | For Dart/Flutter projects (FVM, `$FLUTTER_ROOT`, or `PATH`) |
 
 ### External tool directories
 
@@ -96,43 +97,46 @@ git config --global status.showUntrackedFiles all
 ```
 ~/.config/nvim/
 ├── init.lua                   # Entry point: leader, netrw disable, lazy bootstrap
-├── ts_install_info.lua        # Custom :TSInstallInfo floating window (loaded by init.lua)
-├── lua/
-│   ├── config/
-│   │   ├── lazy.lua           # Plugin list + LazyVim extras
-│   │   ├── options.lua        # Vim options (overrides LazyVim defaults)
-│   │   ├── keymaps.lua        # User keymaps (ported from old nvimrc)
-│   │   ├── autocmds.lua       # Autocommands + user commands
-│   │   ├── grep.lua           # ripgrep flag / filetype-scoping helpers
-│   │   ├── grep_finder.lua    # snacks.picker grep source (ft-scoped results)
-│   │   ├── window_picker.lua  # Window-picker integration (snacks / aerial / neo-tree / qf)
-│   │   ├── quickfix.lua       # Quickfix buffer keymaps (<CR> / <C-x> / <C-v>)
-│   │   └── flutter_sdk.lua    # Flutter SDK auto-detection (FVM / $FLUTTER_HOME / PATH)
-│   ├── plugins/
-│   │   ├── ai.lua             # claudecode.nvim + avante.nvim
-│   │   ├── bufferline.lua     # bufferline.nvim (tab/buffer line customisation)
-│   │   ├── colorscheme.lua    # monokai-pro (pro filter)
-│   │   ├── completion.lua     # blink.cmp extra sources
-│   │   ├── explorer.lua       # neo-tree
-│   │   ├── flutter.lua        # flutter-tools.nvim + Dart LSP + Flutter keymaps
-│   │   ├── formatting.lua     # conform.nvim tweaks
-│   │   ├── fuzzy.lua          # snacks.picker config + git pickers
-│   │   ├── git.lua            # neogit + diffview.nvim
-│   │   ├── go.lua             # Go struct tags + interface stubs (gomodifytags, impl)
-│   │   ├── go-nvim.lua        # ray-x/go.nvim (comprehensive Go IDE features)
-│   │   ├── highlight.lua      # hlargs + rainbow-delimiters + eyeliner
-│   │   ├── keymaps.lua        # LazyVim keymap overrides
-│   │   ├── languages.lua      # Extra LSP/treesitter (HTML/CSS/Bash/…)
-│   │   ├── statusline.lua     # lualine extensions (block context, char value, clock)
-│   │   ├── symbols.lua        # aerial.nvim (symbol outline)
-│   │   ├── textobjects.lua    # nvim-various-textobjs
-│   │   ├── ui.lua             # Dashboard off, noice off, notifier timeout + indent
-│   │   ├── undotree.lua       # mbbill/undotree
-│   │   └── window-picker.lua  # nvim-window-picker (letter overlay for split navigation)
-│   └── templates/
-│       └── nvim.lua           # Lua file template
+├── lazy-lock.json             # Pinned plugin revisions (managed by lazy.nvim)
+├── lazyvim.json               # LazyVim install metadata
 ├── key-mapping.md             # Full keymap reference ← see this for all bindings
-└── README.md                  # This file
+├── README.md                  # This file
+├── templates/
+│   ├── nvim.lua               # Per-project .nvim.lua template (exrc)
+│   └── neoconf.json           # Per-project .neoconf.json template (LSP)
+└── lua/
+    ├── ts_install_info.lua    # Custom :TSInstallInfo floating window
+    ├── config/
+    │   ├── lazy.lua           # Plugin list + LazyVim extras
+    │   ├── options.lua        # Vim options (overrides LazyVim defaults)
+    │   ├── keymaps.lua        # User keymaps (ported from old nvimrc)
+    │   ├── autocmds.lua       # Autocommands + user commands
+    │   ├── grep.lua           # ripgrep flag / filetype-scoping helpers
+    │   ├── grep_finder.lua    # Patched snacks.picker grep finder (-v / no-col lines)
+    │   ├── window_picker.lua  # Window-picker integration (snacks / aerial / neo-tree / qf)
+    │   ├── quickfix.lua       # Quickfix buffer keymaps (<CR> / <C-x> / <C-v>)
+    │   └── flutter_sdk.lua    # Flutter SDK auto-detection (FVM / FLUTTER_ROOT / PATH)
+    └── plugins/
+        ├── ai.lua             # claudecode.nvim + avante.nvim + opencode.nvim
+        ├── bufferline.lua     # bufferline.nvim (tab/buffer line customisation)
+        ├── colorscheme.lua    # monokai-pro (pro filter → monokai-pro-machine)
+        ├── completion.lua     # blink.cmp extra sources + LuaSnip
+        ├── explorer.lua       # neo-tree
+        ├── flutter.lua        # flutter-tools.nvim + Dart LSP + Flutter keymaps
+        ├── formatting.lua     # conform.nvim tweaks
+        ├── fuzzy.lua          # snacks.picker config + git pickers + window-picker open
+        ├── git.lua            # neogit + diffview.nvim
+        ├── go.lua             # Go struct tags + interface stubs (gomodifytags, impl)
+        ├── go-nvim.lua        # ray-x/go.nvim (comprehensive Go IDE features)
+        ├── highlight.lua      # hlargs + rainbow-delimiters + eyeliner
+        ├── keymaps.lua        # LazyVim keymap overrides (\cf → \lf)
+        ├── languages.lua      # Extra LSP/treesitter + lsplinks (YAML/JSON $ref)
+        ├── statusline.lua     # lualine extensions (block context, Flutter, char, clock)
+        ├── symbols.lua        # aerial.nvim (symbol outline)
+        ├── textobjects.lua    # nvim-various-textobjs
+        ├── ui.lua             # Dashboard off, noice off, notifier timeout + indent
+        ├── undotree.lua       # mbbill/undotree
+        └── window-picker.lua  # nvim-window-picker (letter overlay for split navigation)
 ```
 
 ---
@@ -146,6 +150,20 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 
 1. `init.lua` — before lazy.nvim loads (affects plugin key specs)
 2. `lua/config/options.lua` — after LazyVim's options run, before keymaps register
+
+---
+
+## Per-project configuration
+
+`exrc` is enabled. Drop project-local overrides in the project root:
+
+| File | Source template | Purpose |
+| ---- | --------------- | ------- |
+| `.nvim.lua` | `templates/nvim.lua` | Options, keymaps, conform overrides for one repo |
+| `.neoconf.json` | `templates/neoconf.json` | LSP server settings (pyright path, gopls analyses, …) |
+
+First time you open a project with `.nvim.lua`, run `:trust` (or `:trust!`) so Neovim
+records approval under `~/.local/state/nvim/trust`.
 
 ---
 
@@ -204,10 +222,11 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 
 | Plugin                 | Purpose                                                                                                                                                        |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **nvim-lspconfig**     | LSP client configuration (LazyVim base + HTML, CSS, Bash, Emmet).                                                                                              |
+| **nvim-lspconfig**     | LSP client configuration (LazyVim base + HTML, CSS, Bash, Emmet, SchemaStore-backed JSON/YAML).                                                                |
+| **lsplinks.nvim**      | Navigate YAML/JSON `$ref` document links from yamlls/jsonls. Bound to `gL`.                                                                                   |
 | **blink.cmp**          | Completion engine with LSP, path, snippets, buffer sources (LazyVim base). Extended with: `spell` (dictionary), `tmux` (visible panes), `omni` (vim omnifunc). |
 | **conform.nvim**       | Auto-formatting on save (LazyVim base). Format key moved to `\lf`.                                                                                             |
-| **aerial.nvim**        | Symbol outline panel on the right. Toggle with `F4`. Shows LSP detail (full signatures).                                                                       |
+| **aerial.nvim**        | Symbol outline panel on the right (full editor height). Toggle with `F4`. Shows LSP detail (full signatures).                                                  |
 | **treesitter-context** | Sticky scroll — keeps the function/class signature pinned at the top when scrolled out of view.                                                                |
 
 #### Editing
@@ -240,8 +259,8 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **flutter-tools.nvim** (`nvim-flutter/flutter-tools.nvim`) | Full Flutter IDE: manages dartls itself (do **not** enable `lang.dart` extra), hot reload/restart, device picker, widget outline, dev log. |
 | **neotest-dart**             | Dart/Flutter test runner via neotest.                                                                                |
-| **`lua/config/flutter_sdk.lua`** | Auto-detects the Flutter SDK: checks project `.fvm/flutter_sdk`, FVM global cache, `$FLUTTER_HOME`, then `PATH`. Re-runs on `DirChanged`. |
-| **`:FlutterSdkInfo`**        | Shows the resolved Flutter SDK path and source (FVM / env / PATH). See User commands below.                         |
+| **`lua/config/flutter_sdk.lua`** | Auto-detects the Flutter SDK: project `.fvm/flutter_sdk` → FVM version cache → `$FLUTTER_ROOT` → `PATH` → common install dirs. Re-runs on `DirChanged` / before dart attach. |
+| **`:FlutterSdkInfo`**        | Shows the resolved Flutter SDK path and source. See User commands below.                                            |
 
 > **Note:** `flutter-tools.nvim` configures `dartls` internally. The LazyVim `lang.dart` extra must **not** be imported — it would register a second dartls via lspconfig and cause conflicts.
 
@@ -251,14 +270,15 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------- |
 | **claudecode.nvim** | `\a` prefix | Bridges the Claude Code CLI (`claude` command in terminal) with Neovim — reads/writes buffers, shows diffs. |
 | **avante.nvim**     | `\A` prefix | Inline AI panel: chat (`\Ac`), ask (`\Aa`), edit selection (`\Ae`), and more. Requires `ANTHROPIC_API_KEY`. |
+| **opencode.nvim**   | `\o` prefix | OpenCode CLI integration (loaded only when `opencode` is on `$PATH`). Toggle panel (`\oo`), ask (`\oa`), select action (`\os`). Uses snacks.terminal on the right. |
 
 #### UI
 
 | Plugin              | Purpose                                                                                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **monokai-pro**     | Colorscheme (pro filter). |
+| **monokai-pro**     | Colorscheme (`filter = "pro"`; LazyVim colorscheme name: `monokai-pro-machine`). |
 | **bufferline.nvim** | Buffer/tab line with LSP diagnostic indicators, custom icons via mini.icons, and buffer-number labels. |
-| **lualine**         | Status line (LazyVim base). Extended: `lualine_c` shows treesitter block context (if/for/while); `lualine_x` shows char value · EOL type · filetype; `lualine_z` shows `⌚HH:MM Weekday DD/MM/YYYY📅`. |
+| **lualine**         | Status line (LazyVim base). Extended: `lualine_c` shows treesitter block context (if/for/while); `lualine_x` shows Flutter device/version (Dart) · char value · EOL type · filetype; `lualine_z` shows `⌚HH:MM Weekday DD/MM/YYYY📅`. |
 | **snacks.notifier** | Notification popups (noice.nvim disabled). Timeout: 15 s (default); if `DEBUG_MESSAGES` is a number → that many ms; if set to any non-numeric value → 90 000 ms. |
 
 ---
@@ -274,7 +294,8 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | `cmdheight`         | 0               | 2 (noice is disabled)                             |
 | `colorcolumn`       | —               | 120                                               |
 | `textwidth`         | —               | 120                                               |
-| `spell`             | off             | on (English + Hebrew)                             |
+| `spell`             | off             | on (`en_us` + `en`; RTL typing via F8/F9)         |
+| `F2`                | —               | smart buffer/window close (see key-mapping.md)    |
 | `timeout`           | on              | off (only `ttimeoutlen`)                          |
 | Format key          | `\cf`           | `\lf` (`\cf` kept for cross-instance paste)       |
 | Quit all            | `\qq` / `\qa`   | `\Qq` / `\Qa`                                     |
@@ -285,45 +306,50 @@ LazyVim unconditionally overrides `mapleader` to `<Space>` inside its own
 | Swap files          | `~/.swp`        | `~/tmp/swp//`                                     |
 | Undo files          | `~/.vim/undo`   | `~/tmp/vim_undo/`                                 |
 | Notifier timeout    | 3 s             | 15 s default; see `DEBUG_MESSAGES` env var        |
+| Trailing whitespace | —               | highlighted + trimmed on save                     |
+| Indent defaults     | 2-space soft tabs | 2-space soft tabs (Go: hard tabs via autocmd)  |
 
 ---
 
 ## User commands
 
-| Command                     | Description                                                                       |
-| --------------------------- | --------------------------------------------------------------------------------- |
-| `:DiagNext`                 | Jump to next diagnostic, auto-open float                                          |
-| `:DiagPrev`                 | Jump to previous diagnostic, auto-open float                                      |
-| `:DiagNextE` / `:DiagPrevE` | Jump to next/prev **error**                                                       |
-| `:DiagNextW` / `:DiagPrevW` | Jump to next/prev **warning**                                                     |
-| `:DiagInfo`                 | Show diagnostic detail float under cursor                                         |
-| `:TSInstallInfo`            | Show treesitter parser install status (recreated — removed in nvim-treesitter v1) |
-| `:Messages`                 | Open `:messages` output in a scratch buffer                                       |
-| `:Term`                     | Open a terminal in a horizontal split                                             |
-| `:VTerm`                    | Open a terminal in a vertical split                                               |
-| `:FormatJSON`               | Format selected/whole-file JSON via `jq`                                          |
-| `:FormatXML`                | Format selected/whole-file XML via `xmllint`                                      |
-| `:GenerateUUID`             | Insert a new UUID at the cursor (`uuidgen`)                                       |
-| `:ReloadFile [buf…]`        | Reload current buffer (or named buffers) from disk, keeping cursor position       |
-| `:LspRename [name]`         | Rename symbol under cursor via LSP (optional new name as argument)                |
-| `:LspInfo`                  | Show LSP health / active client status (`:checkhealth vim.lsp`)                   |
-| `:LspLog`                   | Open the LSP log file                                                             |
-| `:LspLogLevel <level>`      | Set LSP log verbosity: `trace` / `debug` / `info` / `warn` / `error` / `off`     |
-| `:LspRestart`               | Restart all LSP clients attached to the current buffer                            |
-| `:BlinkClearFrequency`      | Clear blink.cmp frecency cache (`~/state/nvim/blink/cmp/frecency.dat`)            |
-| `:FlutterSdkInfo`           | Show the resolved Flutter SDK path and detection source (FVM / `$FLUTTER_HOME` / PATH). Available after opening a `.dart` file. |
+| Command                          | Description                                                                                          |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `:DiagNext` / `:DiagPrev`        | Jump to next/prev diagnostic, auto-open float                                                        |
+| `:DiagNextError` / `:DiagPrevError` | Jump to next/prev **error**, auto-open float                                                      |
+| `:DiagNextWarn` / `:DiagPrevWarn`   | Jump to next/prev **warning**, auto-open float                                                    |
+| `:DiagInfo`                      | Show diagnostic detail float under cursor (source + code)                                            |
+| `:DiagLine`                      | Show all diagnostics on the current line (float)                                                     |
+| `:DiagList`                      | Open workspace diagnostics in Trouble                                                                |
+| `:DiagBufList`                   | Open current-buffer diagnostics in Trouble                                                           |
+| `:TSInstallInfo`                 | Interactive treesitter grammar list: install/uninstall/update, filter installed/missing (see key-mapping.md) |
+| `:Messages`                      | Show snacks.nvim notification history (plugin `vim.notify` calls)                                    |
+| `:Term`                          | Open a terminal in a horizontal split (starts in insert)                                             |
+| `:VTerm`                         | Open a terminal in a vertical split (starts in insert)                                               |
+| `:FormatJSON`                    | Format selected/whole-file JSON via `jq`                                                             |
+| `:FormatXML`                     | Format selected/whole-file XML via `xmllint`                                                         |
+| `:GenerateUUID`                  | Insert a new UUID at the cursor (`uuidgen`)                                                          |
+| `:ReloadFile [buf…]`             | Reload current buffer (or named open buffers) from disk, keeping cursor position                     |
+| `:LspRename [name]`              | Rename symbol under cursor via LSP (optional new name as argument)                                   |
+| `:LspInfo`                       | Show LSP health / active client status (`:checkhealth vim.lsp`)                                      |
+| `:LspLog`                        | Open the LSP log file                                                                                |
+| `:LspLogLevel <level>`           | Set LSP log verbosity: `trace` / `debug` / `info` / `warn` / `error` / `off`                        |
+| `:LspRestart`                    | Restart all LSP clients attached to the current buffer                                               |
+| `:BlinkClearFrequency`           | Clear blink.cmp frecency cache (`stdpath("state")/blink/cmp/frecency.dat`)                           |
+| `:FlutterSdkInfo`                | Show resolved Flutter SDK path and detection source. Available after opening a `.dart` file.         |
 
 ---
 
 ## Environment variables
 
-| Variable                     | Effect                                                              |
-| ---------------------------- | ------------------------------------------------------------------- |
-| `DEBUG_MESSAGES=<number>`    | Notification timeout → that many **milliseconds** (e.g. `90000`)   |
+| Variable                      | Effect                                                              |
+| ----------------------------- | ------------------------------------------------------------------- |
+| `DEBUG_MESSAGES=<number>`     | Notification timeout → that many **milliseconds** (e.g. `90000`)   |
 | `DEBUG_MESSAGES=<non-number>` | Notification timeout → 90 000 ms (e.g. `DEBUG_MESSAGES=yes`)       |
-| _(unset)_                    | Notification timeout → 15 000 ms (15 s)                            |
-| `ANTHROPIC_API_KEY`          | Required for avante.nvim (inline AI panel)                         |
-| `TMUX`                       | Enables blink-cmp-tmux completion source automatically              |
+| _(unset)_                     | Notification timeout → 15 000 ms (15 s)                            |
+| `ANTHROPIC_API_KEY`           | Required for avante.nvim (inline AI panel)                         |
+| `TMUX`                        | Enables blink-cmp-tmux completion source automatically              |
+| `FLUTTER_ROOT`                | Preferred Flutter SDK root (must contain `bin/flutter`)            |
 
 ---
 
@@ -334,21 +360,23 @@ keymap organised by plugin and mode, with descriptions and a table of contents.
 
 Quick orientation:
 
-| Prefix | Domain                                              |
-| ------ | --------------------------------------------------- |
-| `\a`   | Claude Code CLI (claudecode.nvim)                   |
-| `\A`   | Avante inline AI                                    |
-| `\F`   | Flutter / Dart tools (buffer-local in `.dart` files) |
-| `\g`   | Git (gitsigns, snacks, neogit, diffview)            |
-| `\G`   | Git diff hunks / origin diff                        |
-| `\l`   | LSP actions (`\lf` = format)                        |
-| `\b`   | Buffers                                             |
-| `\s`   | Search / pickers                                    |
-| `\Q`   | Quit (`\Qq` quit-all, `\Qa` quit-all-force)         |
-| `F2`   | Close current split (safe — won't exit last window) |
-| `F3`   | Toggle neo-tree explorer                            |
-| `F4`   | Toggle aerial symbol outline                        |
-| `F5`   | Toggle search highlight                             |
-| `F6`   | Toggle undotree                                     |
-| `F8`   | Toggle reverse-insert (Hebrew/Arabic)               |
-| `F9`   | Toggle right-to-left mode (Hebrew/Arabic)           |
+| Prefix | Domain                                                                 |
+| ------ | ---------------------------------------------------------------------- |
+| `\a`   | Claude Code CLI (claudecode.nvim)                                      |
+| `\A`   | Avante inline AI                                                       |
+| `\o`   | OpenCode CLI (when `opencode` is installed)                            |
+| `\F`   | Flutter / Dart tools (buffer-local in `.dart` files)                   |
+| `\g`   | Git (gitsigns, snacks, neogit, diffview)                               |
+| `\G`   | Git diff hunks / origin diff                                           |
+| `\l`   | LSP actions (`\lf` = format)                                           |
+| `\b`   | Buffers                                                                |
+| `\s`   | Search / pickers                                                       |
+| `\Q`   | Quit (`\Qq` quit-all, `\Qa` quit-all-force)                            |
+| `F2`   | Smart close: sidebar/special → close win; else delete buffer (safe)    |
+| `F3`   | Toggle neo-tree explorer                                               |
+| `F4`   | Toggle aerial symbol outline                                           |
+| `F5`   | Toggle search highlight                                                |
+| `F6`   | Toggle undotree                                                        |
+| `F8`   | Toggle reverse-insert (Hebrew/Arabic)                                  |
+| `F9`   | Toggle right-to-left mode (Hebrew/Arabic)                              |
+| `gL`   | Follow LSP document link (`$ref` in YAML/JSON)                         |
