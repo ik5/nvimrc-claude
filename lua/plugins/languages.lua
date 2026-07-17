@@ -29,28 +29,27 @@ return {
 		end,
 	},
 
-	-- Schema store (helps jsonls + yamlls)
-	{
-		"b0o/SchemaStore.nvim",
-		version = false, -- use latest
-	},
+	-- SchemaStore.nvim is provided by LazyVim lang.yaml / lang.json extras.
+	-- OpenAPI / Swagger globs + content-detect live in lua/plugins/openapi.lua.
+	-- Do NOT re-enable yamlls built-in schemaStore here — it conflicts with
+	-- SchemaStore.nvim (LazyVim sets enable = false on purpose).
 
-	-- ── LSP document links ($ref navigation for YAML/JSON) ───────────────────
+	-- ── LSP document links ($ref navigation for YAML/JSON / OpenAPI) ─────────
 	-- yamlls/jsonls expose $ref targets via textDocument/documentLink, which
 	-- Neovim doesn't handle natively yet. lsplinks bridges that gap.
+	-- Use gL on an OpenAPI $ref (e.g. '#/components/schemas/Pet').
 	{
 		"icholy/lsplinks.nvim",
 		event = "LspAttach",
 		config = function()
 			local lsplinks = require("lsplinks")
 			lsplinks.setup()
-			-- Override gx (default) or pick something that doesn't conflict.
-			-- If you use gx for URL opening, consider "gL" or "g<CR>" instead.
-			vim.keymap.set("n", "gL", lsplinks.gx)
+			vim.keymap.set("n", "gL", lsplinks.gx, { desc = "Follow LSP document link ($ref)" })
 		end,
 	},
 
 	-- ── LSP: HTML, CSS, Bash (not in any LazyVim extra) ─────────────────────
+	-- YAML/JSON servers are configured by LazyVim extras + lua/plugins/openapi.lua
 	{
 		"neovim/nvim-lspconfig",
 		opts = {
@@ -79,26 +78,6 @@ return {
 					settings = {
 						bashIde = {
 							globPattern = "*@(.sh|.inc|.bash|.command)",
-						},
-					},
-				},
-				yamlls = {
-					settings = {
-						yaml = {
-							validate = true,
-							schemaStore = {
-								enable = true, -- Let it auto-fetch when needed
-								url = "https://www.schemastore.org/api/json/catalog.json",
-							},
-						},
-					},
-				},
-
-				jsonls = {
-					settings = {
-						json = {
-							schemas = require("schemastore").json.schemas(),
-							validate = { enable = true },
 						},
 					},
 				},

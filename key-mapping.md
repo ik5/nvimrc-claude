@@ -353,6 +353,7 @@ Closes without abandoning the last real editing window (sidebars alone never for
 | `:Messages` | Show snacks.nvim notification history (`vim.notify` from plugins; not built-in `:messages`) |
 | `:TSInstallInfo` | Interactive treesitter grammar list (see below). Recreated — removed in the nvim-treesitter v1 rewrite. |
 | `:BlinkClearFrequency` | Clear blink.cmp frecency/recency cache |
+| `:OpenApiSchema [3\|2]` | Bind OpenAPI 3.x (`3`) or Swagger 2.0 (`2`) schema to the current YAML/JSON buffer. Auto-detects `openapi:` / `swagger:` when the arg is omitted. |
 
 ### `:TSInstallInfo` keys (inside the floating window)
 

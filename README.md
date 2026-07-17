@@ -131,6 +131,7 @@ git config --global status.showUntrackedFiles all
         ├── highlight.lua      # hlargs + rainbow-delimiters + eyeliner
         ├── keymaps.lua        # LazyVim keymap overrides (\cf → \lf)
         ├── languages.lua      # Extra LSP/treesitter + lsplinks (YAML/JSON $ref)
+        ├── openapi.lua        # OpenAPI 3.x / Swagger 2.0 schema globs + content-detect
         ├── statusline.lua     # lualine extensions (block context, Flutter, char, clock)
         ├── symbols.lua        # aerial.nvim (symbol outline)
         ├── textobjects.lua    # nvim-various-textobjs
@@ -223,7 +224,8 @@ records approval under `~/.local/state/nvim/trust`.
 | Plugin                 | Purpose                                                                                                                                                        |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **nvim-lspconfig**     | LSP client configuration (LazyVim base + HTML, CSS, Bash, Emmet, SchemaStore-backed JSON/YAML).                                                                |
-| **lsplinks.nvim**      | Navigate YAML/JSON `$ref` document links from yamlls/jsonls. Bound to `gL`.                                                                                   |
+| **lsplinks.nvim**      | Navigate YAML/JSON `$ref` document links from yamlls/jsonls (incl. OpenAPI). Bound to `gL`.                                                                  |
+| **OpenAPI / Swagger**  | Extra globs + content-detect for OpenAPI 3.x / Swagger 2.0 via yamlls + jsonls (`lua/plugins/openapi.lua`). Manual: `:OpenApiSchema [3\|2]`.                  |
 | **blink.cmp**          | Completion engine with LSP, path, snippets, buffer sources (LazyVim base). Extended with: `spell` (dictionary), `tmux` (visible panes), `omni` (vim omnifunc). |
 | **conform.nvim**       | Auto-formatting on save (LazyVim base). Format key moved to `\lf`.                                                                                             |
 | **aerial.nvim**        | Symbol outline panel on the right (full editor height). Toggle with `F4`. Shows LSP detail (full signatures).                                                  |
@@ -337,6 +339,7 @@ records approval under `~/.local/state/nvim/trust`.
 | `:LspRestart`                    | Restart all LSP clients attached to the current buffer                                               |
 | `:BlinkClearFrequency`           | Clear blink.cmp frecency cache (`stdpath("state")/blink/cmp/frecency.dat`)                           |
 | `:FlutterSdkInfo`                | Show resolved Flutter SDK path and detection source. Available after opening a `.dart` file.         |
+| `:OpenApiSchema [3\|2]`          | Bind OpenAPI 3.x or Swagger 2.0 JSON Schema to the current YAML/JSON buffer (auto-detects if omitted) |
 
 ---
 
