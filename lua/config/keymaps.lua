@@ -44,9 +44,9 @@ map("i", "<C-Right>", "<ESC><C-W>l")
 
 -- Terminal window navigation
 map("t", "<C-Down>", [[<C-\><C-n><C-W>j]])
-map("t", "<C-Up>",   [[<C-\><C-n><C-W>k]])
+map("t", "<C-Up>", [[<C-\><C-n><C-W>k]])
 map("t", "<C-Left>", [[<C-\><C-n><C-W>h]])
-map("t", "<C-Right>",[[<C-\><C-n><C-W>l]])
+map("t", "<C-Right>", [[<C-\><C-n><C-W>l]])
 
 -- Close all windows except the active one
 -- NOTE: conflicts with LazyVim's <leader>q (quit/session). LazyVim's quit
@@ -64,28 +64,52 @@ map("n", "+", "<C-W>+")
 map("n", "<M-,>", "<C-W>>")
 map("n", "<M-.>", "<C-W><")
 
--- F2: delete the current buffer (keep window open via Snacks.bufdelete).
--- Only close the split afterwards when there are other editing windows left —
--- sidebars (neo-tree, aerial, undotree) are excluded from the count so that
--- closing the last editing split does not leave neo-tree alone (and exit nvim).
+-- F2 smart-close:
+-- 1. Non-editable window (help, qf, terminal, sidebars, …) → :close only
+-- 2. Same buffer shown in another window → :close only (keep the buffer)
+-- 3. Otherwise delete the buffer (Snacks.bufdelete → other file or empty
+--    buffer in place). If other editing windows remain, also :close this
+--    split so we don't end up with the same file duplicated in both panes.
+-- Sidebars are excluded from the editing-window count so the last real
+-- file never collapses down to neo-tree alone (and exits nvim).
 map("n", "<F2>", function()
-  local sidebar_fts = { ["neo-tree"] = true, aerial = true, undotree = true }
-  local editing_wins = 0
-  for _, win in ipairs(vim.api.nvim_list_wins()) do
-    local ok, buf = pcall(vim.api.nvim_win_get_buf, win)
-    if ok then
-      local cfg = vim.api.nvim_win_get_config(win)
-      local ft  = vim.bo[buf].filetype
-      if cfg.relative == "" and not sidebar_fts[ft] then
-        editing_wins = editing_wins + 1
-      end
-    end
-  end
-  Snacks.bufdelete()
-  if editing_wins > 1 then
-    vim.cmd("close")
-  end
-end, { silent = true, desc = "Close buffer (keep layout)" })
+	local sidebar_fts = { ["neo-tree"] = true, aerial = true, undotree = true }
+	local buf = vim.api.nvim_get_current_buf()
+	local ft = vim.bo[buf].filetype
+	local buftype = vim.bo[buf].buftype
+
+	-- Special / non-editable windows: just close the window.
+	if buftype ~= "" or sidebar_fts[ft] then
+		pcall(vim.cmd, "close")
+		return
+	end
+
+	-- Same buffer already visible in another window: only drop this split.
+	if #vim.fn.win_findbuf(buf) > 1 then
+		pcall(vim.cmd, "close")
+		return
+	end
+
+	-- Count other editing windows (non-float, non-sidebar) before delete.
+	local editing_wins = 0
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local ok, wbuf = pcall(vim.api.nvim_win_get_buf, win)
+		if ok then
+			local cfg = vim.api.nvim_win_get_config(win)
+			local wft = vim.bo[wbuf].filetype
+			if cfg.relative == "" and not sidebar_fts[wft] then
+				editing_wins = editing_wins + 1
+			end
+		end
+	end
+
+	-- Delete buffer; Snacks keeps the window and switches to another listed
+	-- buffer, or creates a new empty one when this was the last file.
+	Snacks.bufdelete()
+	if editing_wins > 1 then
+		pcall(vim.cmd, "close")
+	end
+end, { silent = true, desc = "Smart close buffer/window" })
 
 -- Equalize splits
 map("n", "<Leader>=", "<C-w>=")
@@ -97,8 +121,12 @@ map("n", "<Leader>=", "<C-w>=")
 -- Snacks.bufdelete() deletes the buffer but keeps the window alive by
 -- switching to another buffer (or a new empty one if none exist).
 -- This prevents neo-tree from expanding when the last file is closed.
-map("n", "<leader>d", function() Snacks.bufdelete() end, { silent = true, desc = "Delete buffer (keep window)" })
-map("n", "<leader>D", function() Snacks.bufdelete({ wipeout = true }) end, { silent = true, desc = "Wipeout buffer (keep window)" })
+map("n", "<leader>d", function()
+	Snacks.bufdelete()
+end, { silent = true, desc = "Delete buffer (keep window)" })
+map("n", "<leader>D", function()
+	Snacks.bufdelete({ wipeout = true })
+end, { silent = true, desc = "Wipeout buffer (keep window)" })
 map("n", "<M-d>", ":bn<CR>", { silent = true })
 map("n", "<M-a>", ":bp<CR>", { silent = true })
 map("n", "<leader>bfn", ":bn<CR>", { silent = true })
@@ -146,8 +174,18 @@ map("n", "gx", "xph")
 map("n", "gX", "Xph")
 
 -- Swap current word with prev / next
-map("n", "gl", [[<silent>"_yiw?\w\+\_W\+\%#<CR>:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o><C-l>:nohlsearch<CR>]], { silent = true })
-map("n", "gr", [[<silent>"_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>]], { silent = true })
+map(
+	"n",
+	"gl",
+	[[<silent>"_yiw?\w\+\_W\+\%#<CR>:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o><C-l>:nohlsearch<CR>]],
+	{ silent = true }
+)
+map(
+	"n",
+	"gr",
+	[[<silent>"_yiw:s/\(\%#\w\+\)\(\_W\+\)\(\w\+\)/\3\2\1/<CR><C-o>/\w\+\_W\+<CR><C-l>:nohlsearch<CR>]],
+	{ silent = true }
+)
 
 -- Swap current paragraph with next / prev
 map("n", "g{", "{dap}p{")
@@ -309,11 +347,11 @@ map("n", "ga", [[:silent grepadd! ]], { desc = "Grep add (quickfix; rg flags bef
 -- (Plain `gd` uses snacks picker; <CR> last win · <C-x> hsplit · <C-v> vsplit)
 
 map("n", "<leader>gd", function()
-  vim.cmd("split")
-  vim.lsp.buf.definition()
+	vim.cmd("split")
+	vim.lsp.buf.definition()
 end, { desc = "Go to Definition (hsplit)", silent = true })
 
 map("n", "<leader>gD", function()
-  vim.cmd("vsplit")
-  vim.lsp.buf.definition()
+	vim.cmd("vsplit")
+	vim.lsp.buf.definition()
 end, { desc = "Go to Definition (vsplit)", silent = true })
