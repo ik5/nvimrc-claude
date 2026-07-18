@@ -35,16 +35,15 @@ return {
 	-- SchemaStore.nvim (LazyVim sets enable = false on purpose).
 
 	-- ── LSP document links ($ref navigation for YAML/JSON / OpenAPI) ─────────
-	-- yamlls/jsonls expose $ref targets via textDocument/documentLink, which
-	-- Neovim doesn't handle natively yet. lsplinks bridges that gap.
-	-- Use gL on an OpenAPI $ref (e.g. '#/components/schemas/Pet').
+	-- yamlls/jsonls expose $ref targets via textDocument/documentLink.
+	-- gL is owned by config.openapi_nav.follow_link (OpenAPI local $ref first,
+	-- then file:// / https links). Do NOT map gL to lsplinks.gx — that calls
+	-- xdg-open for non-file URIs and tries to "open" #/components/... in the OS.
 	{
 		"icholy/lsplinks.nvim",
 		event = "LspAttach",
 		config = function()
-			local lsplinks = require("lsplinks")
-			lsplinks.setup()
-			vim.keymap.set("n", "gL", lsplinks.gx, { desc = "Follow LSP document link ($ref)" })
+			require("lsplinks").setup()
 		end,
 	},
 

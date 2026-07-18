@@ -199,7 +199,12 @@ Closes without abandoning the last real editing window (sidebars alone never for
 | `gX` | n | Swap current char with previous |
 | `gl` | n | Swap current word with previous |
 | `gr` | n | Swap current word with next (overrides LazyVim LSP references on this key) |
-| `gL` | n | Follow LSP document link (`$ref` / YAML·JSON pointer via lsplinks.nvim) |
+| `gL` | n | **OpenAPI / links:** jump to local `$ref` first; else `file://` or `https://` document links. Never OS-opens `#/components/...` |
+| `K` | n | **OpenAPI:** preview local `$ref` / component; else LSP hover (no empty-hover spam) |
+| `gd` | n | **OpenAPI:** jump to local `$ref`; else LSP/snacks definition |
+| `gR` | n | **OpenAPI:** force `$ref` preview |
+| `:OpenApiHover` / `:OpenAPIHover` | — | Preview `$ref` under cursor |
+| `:OpenApiGoto` / `:OpenAPIGoto` | — | Jump to `$ref` under cursor |
 | `g{` | n | Swap paragraph with previous |
 | `g}` | n | Swap paragraph with next |
 
@@ -353,7 +358,7 @@ Closes without abandoning the last real editing window (sidebars alone never for
 | `:Messages` | Show snacks.nvim notification history (`vim.notify` from plugins; not built-in `:messages`) |
 | `:TSInstallInfo` | Interactive treesitter grammar list (see below). Recreated — removed in the nvim-treesitter v1 rewrite. |
 | `:BlinkClearFrequency` | Clear blink.cmp frecency/recency cache |
-| `:OpenApiSchema [3\|2]` | Bind OpenAPI 3.x (`3`) or Swagger 2.0 (`2`) schema to the current YAML/JSON buffer. Auto-detects `openapi:` / `swagger:` when the arg is omitted. |
+| `:OpenApiSchema [3.1\|3.0\|2]` | Bind full OpenAPI 3.1 / 3.0 or Swagger 2.0 schema to the current YAML/JSON buffer. Auto-detects `openapi:` / `swagger:` when the arg is omitted. |
 
 ### `:TSInstallInfo` keys (inside the floating window)
 
