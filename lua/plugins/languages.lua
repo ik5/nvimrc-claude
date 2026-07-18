@@ -20,6 +20,7 @@ return {
 				"html", -- HTML
 				"css", -- CSS
 				"make", -- Makefiles / GNU Make
+				"xml", -- XML / DTD-adjacent (lemminx in xml.lua; SOAP/WSDL as xml)
 				-- "asciidoc",      -- not yet in nvim-treesitter's supported parsers
 				"comment", -- TODO / FIXME / NOTE annotations
 				"regex", -- Regex literals

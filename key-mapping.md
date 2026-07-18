@@ -205,6 +205,11 @@ Closes without abandoning the last real editing window (sidebars alone never for
 | `gR` | n | **OpenAPI:** force `$ref` preview |
 | `:OpenApiHover` / `:OpenAPIHover` | — | Preview `$ref` under cursor |
 | `:OpenApiGoto` / `:OpenAPIGoto` | — | Jump to `$ref` under cursor |
+| `:XmlCatalogGenerate[!] [dir]` | — | Generate `catalog.xml` from WSDL/XSD (namespace→file). `!` overwrites |
+| `:XmlCatalogPreview [dir]` | — | Preview generated catalog without writing |
+| `:XmlCatalogs` | — | List catalogs LemMinX is using |
+| `:XmlRestart` | — | Restart lemminx after catalog changes |
+| `gL` / `gR` | n | **XML buffers (lemminx):** goto definition / hover docs |
 | `g{` | n | Swap paragraph with previous |
 | `g}` | n | Swap paragraph with next |
 

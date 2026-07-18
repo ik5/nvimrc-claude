@@ -29,6 +29,7 @@ defaults), while this config overrides the parts that diverge from a classic
 | **`ANTHROPIC_API_KEY`** _(optional)_ | Required only for avante.nvim inline AI               |
 | **`opencode`** _(optional)_          | OpenCode CLI; enables opencode.nvim when on `$PATH`   |
 | **Flutter SDK** _(optional)_         | For Dart/Flutter projects (FVM, `$FLUTTER_ROOT`, or `PATH`) |
+| **Java 17+** _(optional)_            | Required by **lemminx** (XML/DTD/XSD/SOAP language server) |
 
 ### External tool directories
 
@@ -134,6 +135,7 @@ git config --global status.showUntrackedFiles all
         ├── keymaps.lua        # LazyVim keymap overrides (\cf → \lf)
         ├── languages.lua      # Extra LSP/treesitter + lsplinks (YAML/JSON $ref)
         ├── openapi.lua        # OpenAPI schema bind (yamlls/jsonls) + content-detect
+        ├── xml.lua            # lemminx: XML / DTD / XSD / SOAP / WSDL
         ├── statusline.lua     # lualine extensions (block context, Flutter, char, clock)
         ├── symbols.lua        # aerial.nvim (symbol outline)
         ├── textobjects.lua    # nvim-various-textobjs
@@ -227,7 +229,8 @@ records approval under `~/.local/state/nvim/trust`.
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **nvim-lspconfig**     | LSP client configuration (LazyVim base + HTML, CSS, Bash, Emmet, SchemaStore-backed JSON/YAML).                                                                |
 | **lsplinks.nvim**      | Navigate YAML/JSON `$ref` document links from yamlls/jsonls (incl. OpenAPI). Bound to `gL`.                                                                  |
-| **OpenAPI / Swagger**  | Schemas (`openapi.lua`) + blink status/`$ref` complete (`openapi_cmp.lua`) + **reading** nav (`openapi_nav.lua`): `K` preview / `gd` jump to local `$ref`. Manual: `:OpenApiSchema [3.1\|3.0\|2]`. |
+| **OpenAPI / Swagger**  | Schemas (`openapi.lua`) + blink status/`$ref` complete (`openapi_cmp.lua`) + **reading** nav (`openapi_nav.lua`): `gL` / `:OpenApiGoto` / `:OpenApiHover`. |
+| **XML / DTD / XSD / SOAP** | **lemminx** (`xml.lua`). Hover docs + external download. **Generate catalogs on demand:** `:XmlCatalogGenerate` / `:XmlCatalogPreview` (`xml_catalog.lua`) when imports lack `schemaLocation`. Also `:XmlCatalogs`, `:XmlRestart`, `gL`/`gR` on XML buffers. |
 | **blink.cmp**          | Completion engine with LSP, path, snippets, buffer sources (LazyVim base). Extended with: `spell` (dictionary), `tmux` (visible panes), `omni` (vim omnifunc). |
 | **conform.nvim**       | Auto-formatting on save (LazyVim base). Format key moved to `\lf`.                                                                                             |
 | **aerial.nvim**        | Symbol outline panel on the right (full editor height). Toggle with `F4`. Shows LSP detail (full signatures).                                                  |
