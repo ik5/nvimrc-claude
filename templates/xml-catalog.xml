@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--
+  OASIS XML Catalog for LemMinX (DTD + XSD + WSDL/SOAP imports).
+
+  Install as one of:
+    ~/schemas/catalog.xml
+    ~/.local/share/xml/catalog.xml
+    <project>/catalog.xml
+    <project>/schemas/catalog.xml
+
+  Check loaded catalogs:  :XmlCatalogs
+  Reload server:          :XmlRestart
+
+  Relative uri= paths are relative to THIS catalog file's directory.
+-->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+  <!-- ── Map a namespace / schema URL to a local XSD ───────────────────────
+       Use when WSDL/XSD has:
+         schemaLocation="http://example.com/foo.xsd"
+       or:
+         <xsd:import namespace="http://example.com/foo" schemaLocation="http://example.com/foo.xsd"/>
+  -->
+  <!--
+  <uri name="http://example.com/foo"
+       uri="xsd/foo.xsd"/>
+  <uri name="http://example.com/foo.xsd"
+       uri="xsd/foo.xsd"/>
+  <system systemId="http://example.com/foo.xsd"
+          uri="xsd/foo.xsd"/>
+  -->
+
+  <!-- ── SOAP 1.1 / WSDL common namespaces (download XSDs once, point here) ─ -->
+  <!--
+  <uri name="http://schemas.xmlsoap.org/soap/envelope/"
+       uri="soap/envelope.xsd"/>
+  <uri name="http://schemas.xmlsoap.org/wsdl/"
+       uri="wsdl/wsdl.xsd"/>
+  <uri name="http://schemas.xmlsoap.org/wsdl/soap/"
+       uri="wsdl/soap.xsd"/>
+  <rewriteURI uriStartString="http://schemas.xmlsoap.org/"
+              rewritePrefix="soap-org/"/>
+  -->
+
+  <!-- ── DTD PUBLIC id ─────────────────────────────────────────────────────
+       <!DOCTYPE note PUBLIC "-//Example//DTD Note//EN" "note.dtd">
+  -->
+  <!--
+  <public publicId="-//Example//DTD Note//EN"
+          uri="dtd/note.dtd"/>
+  -->
+
+  <!-- ── Prefix rewrite: any URL under a host → local folder ─────────────── -->
+  <!--
+  <rewriteSystem systemIdStartString="https://mycompany.com/schemas/"
+                 rewritePrefix="company/"/>
+  <rewriteURI uriStartString="https://mycompany.com/schemas/"
+              rewritePrefix="company/"/>
+  -->
+
+  <!-- ── Chain another catalog ───────────────────────────────────────────── -->
+  <!--
+  <nextCatalog catalog="project-catalog.xml"/>
+  -->
+
+</catalog>

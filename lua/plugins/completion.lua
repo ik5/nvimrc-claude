@@ -32,7 +32,8 @@ return {
 		opts = function(_, opts)
 			-- Explicit ordered source list (replaces whatever LazyVim sets)
 			opts.sources = opts.sources or {}
-			opts.sources.default = { "lsp", "snippets", "path", "buffer", "omni", "spell", "tmux" }
+			-- openapi: status codes + document-local $ref (yamlls cannot do these)
+			opts.sources.default = { "lsp", "openapi", "snippets", "path", "buffer", "omni", "spell", "tmux" }
 
 			opts.sources.providers = vim.tbl_deep_extend("force", opts.sources.providers or {}, {
 
@@ -42,14 +43,32 @@ return {
 					module = "blink.cmp.sources.lsp",
 					fallbacks = { "buffer" },
 					opts = { tailwind_color_icon = "██" },
-					async = false,
-					timeout_ms = 2000,
+					-- yamlls/jsonls schema completion (esp. OpenAPI) can exceed 2s on
+					-- first request while the full OAS schema is fetched/resolved.
+					-- Blocking + a short timeout drops those items and leaves only buffer/spell.
+					async = true,
+					timeout_ms = 5000,
 					transform_items = nil,
 					should_show_items = true,
 					max_items = nil,
 					min_keyword_length = 0,
 					score_offset = 50,
 					override = nil,
+				},
+
+				-- OpenAPI-aware: HTTP status codes under responses:, $ref keys/values
+				-- to #/components/... (see lua/config/openapi_cmp.lua).
+				openapi = {
+					name = "OpenAPI",
+					module = "config.openapi_cmp",
+					async = true,
+					timeout_ms = 500,
+					score_offset = 80, -- above generic LSP for OpenAPI-specific items
+					min_keyword_length = 0,
+					enabled = function()
+						local ft = vim.bo.filetype
+						return ft == "yaml" or ft == "yml" or ft == "json" or ft == "jsonc"
+					end,
 				},
 
 				-- ── omni ──────────────────────────────────────────────────────────────
