@@ -13,7 +13,7 @@ return {
 			-- Open on the right side
 			layout = {
 				default_direction = "right",
-				placement = "edge",   -- span full editor height, not just current split
+				placement = "edge", -- span full editor height, not just current split
 				resize_to_content = false,
 				width = 45,
 				min_width = 35,
@@ -31,6 +31,8 @@ return {
 			},
 
 			filter_kind = false,
+
+			disable_max_size = 30000000,
 
 			-- Keep the panel closed until explicitly toggled
 			open_automatic = false,
